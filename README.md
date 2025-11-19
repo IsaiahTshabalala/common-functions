@@ -31,6 +31,8 @@ let paths = getPaths(client);
 ### `hasOnly(anObject, ...fields)`
 Returns `true` if the object contains **only** some or all of the specified fields and no others.
 ** Examples **
+const { hasOnly } = require("some-common-functions-js");
+
 let car = {
     make: "Ford",
     model: "Ranger",
@@ -52,7 +54,9 @@ result = hasOnly(car, ["make", "model"]);
 ### `hasAll(anObject, ...fields)`
 Returns `true` if the object contains **all** the specified fields.  
 The object may contain additional fields.
-** Example **
+** Examples **
+const { hasAll } = require("some-common-functions-js");
+
 let car = {
     make: "Ford",
     model: "Ranger",
@@ -61,9 +65,11 @@ let car = {
     type: "pickup truck"
 };
 
-let result = hasAll(car, ["make", "model", "year"]);
+let result = hasAll(car, ["make", "model"]);
 // true, because car has all the specified fields.
 
+let result = hasAll(car, ["passengerCapacity", "year"]);
+// false, because car does not have "passengerCapacity" field.
 ---
 
 ## 2. Field Validation Functions

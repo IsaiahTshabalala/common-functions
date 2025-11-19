@@ -1,7 +1,26 @@
 {
   "name": "some-common-functions-js",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Common functions used with Javascript objects, and field validation functions.",
+  "keywords": [
+    "validation",
+    "validator",
+    "validators",
+    "validate",
+    "user input",
+    "email validation",
+    "password validation",
+    "phone validation",
+    "username validation",
+    "javascript",
+    "utilities",
+    "utility",
+    "functions",
+    "helpers",
+    "object utils",
+    "object validation",
+    "nodejs"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/IsaiahTshabalala/common-functions"
