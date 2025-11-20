@@ -1,6 +1,6 @@
 {
   "name": "some-common-functions-js",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Common functions used with Javascript objects, and field validation functions.",
   "keywords": [
     "validation",
@@ -12,6 +12,8 @@
     "password validation",
     "phone validation",
     "username validation",
+    "object comparison",
+    "comparison",
     "javascript",
     "utilities",
     "utility",
@@ -31,5 +33,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21"
   }
 }
