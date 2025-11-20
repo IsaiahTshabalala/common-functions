@@ -1,12 +1,12 @@
 # Change log
 
-## Version 1.00 - 2025/11/19 - ITA
+## Version 1.0.0 - 2025/11/19 - ITA
 Genesis.
 
-## Version 1.01 - 2025/11/19 - ITA
+## Version 1.0.1 - 2025/11/19 - ITA
 Improve README.md documentation.
 
-## Version 1.02 - 2025/11/20 - ITA
+## Version 1.0.2 - 2025/11/20 - ITA
 - Improve README.md documentation and move documentation of changes to CHANGELOG.md
 - Move more previously tested and used utility functions to this package. These are:
   - compare(value1, value2, sortDir = 'asc')  
@@ -16,3 +16,5 @@ Improve README.md documentation.
   - getObjArrayWithNoDuplicates(objArray, firstOfDuplicates, ...comparisonFields)
 - Add the "lodash" dependency used by some of these newly added functions.
 
+## Version 1.0.4 - 2025/11/20 - ITA
+- Improved the readability of README.me
