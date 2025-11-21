@@ -278,7 +278,8 @@ let teams = [
         numGames: 10  
     }  
 ];  
-// Using objCompare to sort fields where there  
+// Using objCompare to sort fields where there are mixed sort directions.  
+// Sort by score descending, then by numGames ascending.  
 teams.sort((team1, team2) => {  
     return commonFunctions.objCompare(  
                                         team1, team2,  
@@ -287,33 +288,6 @@ teams.sort((team1, team2) => {
                                     );  
 });  
 console.log(teams);  
-/*  
-let teams = [  
-    {  
-        score: 85,  
-        numGames: 10  
-    },  
-    {  
-        score: 90,  
-        numGames: 12  
-    },  
-    {  
-        score: 85,  
-        numGames: 8  
-    },  
-    {  
-        score: 90,  
-        numGames: 10  
-    }  
-];  
-// Sort by score descending, then by numGames ascending.  
-objArray.sort((team1, team2) => {  
-    return commonFunctions.objCompare(  
-                                        team1, team2,  
-                                        "score desc",  
-                                        "numGames asc"  
-                                    );  
-});  
 /*  
     [  
         { score: 90, numGames: 10 },  

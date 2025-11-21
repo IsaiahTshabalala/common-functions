@@ -18,3 +18,6 @@ Improve README.md documentation.
 
 ## Version 1.0.4 - 2025/11/20 - ITA
 - Improved the readability of README.me
+
+## Version 1.05 - 2025/11/21 - ITA
+- Corrected README documentation.
