@@ -19,8 +19,10 @@ Improve README.md documentation.
 ## Version 1.0.4 - 2025/11/20 - ITA
 - Improved the readability of README.me
 
-## Version 1.05 - 2025/11/21 - ITA
+## Version 1.0.5 - 2025/11/21 - ITA
 - Corrected README documentation.
 
-## Version 1.06 - 2025/11/21 - ITA
+## Version 1.0.6 - 2025/11/21 - ITA
 - Updated package.json version in lieu of changes. Otherwise the updated package won't be published on npm.
+## Version 1.0.7 - 2025/11/21 - ITA
+- Corrected README documentation.

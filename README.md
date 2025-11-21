@@ -11,8 +11,8 @@ Common functions used for working with JavaScript objects and validating field v
 ### `getPaths(anObject)`
 Returns a string array of path/field names inside a JavaScript object.  
 ***Example***  
-const { getPaths } = require("some-common-functions-js");  
 ```
+const { getPaths } = require("some-common-functions-js");  
 let client = {  
     name: "Jack",  
     surname: "Stober",  
@@ -200,16 +200,16 @@ let anObject3 = {
 let objArray = [anObject2, anObject, anObject3];  
 // Using objCompare to sort objects in objArray using multiple fields including nested fields.  
 objArray.sort((obj1, obj2)=> {  
-                    return commonFunctions.objCompare(  
-                                                        obj1, obj2,  
-                                                        "address.country.name",  
-                                                        "address.city",  
-                                                        "adress.mainPlace",  
-                                                        "address.subPlace",  
-                                                        "lastName",  
-                                                        "firstName"  
-                                                    );  
-                                                });  
+                    return objCompare(  
+                        obj1, obj2,  
+                        "address.country.name",  
+                        "address.city",  
+                        "adress.mainPlace",  
+                        "address.subPlace",  
+                        "lastName",  
+                        "firstName"  
+                    );  
+                });  
 console.log(objArray);   
 /*  
     [  
@@ -281,11 +281,11 @@ let teams = [
 // Using objCompare to sort fields where there are mixed sort directions.  
 // Sort by score descending, then by numGames ascending.  
 teams.sort((team1, team2) => {  
-    return commonFunctions.objCompare(  
-                                        team1, team2,  
-                                        "score desc",  
-                                        "numGames asc"  
-                                    );  
+    return objCompare(  
+                team1, team2,  
+                "score desc",  
+                "numGames asc"  
+            );  
 });  
 console.log(teams);  
 /*  
@@ -310,6 +310,7 @@ Binary Search the sorted (ascending or descending order) array of objects for a 
 
 ***Example***  
 ```
+const { objCompare, binarySearchObj } = require("some-common-functions-js");
 let teamsArray = [  
     { score: 90, numGames: 10 },  
     { score: 90, numGames: 12 },  
@@ -317,12 +318,12 @@ let teamsArray = [
     { score: 85, numGames: 10 }  
 ]; // Sorted by "score desc", "numGames asc".  
 let searchObj = { score: 85, numGames: 8 };  
-let anIndex = (commonFunctions.binarySearchObj(teamsArray, searchObj, "score desc", "numGames asc"));  
+let anIndex = binarySearchObj(teamsArray, searchObj, "score desc", "numGames asc");  
 
-let result = commonFunctions.objCompare(searchObj, teamsArray[anIndex], "score desc", "numGames asc"); // 0 -- an object with value { score: 85, numGames: 8} exists at teamsArray[anIndex];  
+let result = objCompare(searchObj, teamsArray[anIndex], "score desc", "numGames asc"); // 0 -- an object with value { score: 85, numGames: 8} exists at teamsArray[anIndex];   
 ```
 ## 4. `getObjArrayWithNoDuplicates(objArray, firstOfDuplicates, ...comparisonFields)`
-Create an array of objects with duplicates eliminated. Taking only the first or last object from each duplicate set. The input array must be sorted according to the values comparisonFields.  
+Create an array of objects with duplicates eliminated. Taking only the first or last object from each duplicate set. The input array must be sorted according to the values of comparisonFields.  
  * If firstOfDuplicates === true, then the first element in each set of duplicates is taken.  
  * if firstOfDuplicates === false, then the last element is taken from each set of duplicates.  
  * Assumed field data types are Number, String and Date.  
@@ -333,6 +334,7 @@ Create an array of objects with duplicates eliminated. Taking only the first or 
 
 ***Example***  
 ```
+const { getObjArrayWithNoDuplicates } = require("some-common-functions-js");  
 let teamsArray = [  
     { score: 90, numGames: 10 },  
     { score: 90, numGames: 10 },  
@@ -347,7 +349,7 @@ let teamsArray = [
     { score: 85, numGames: 10 }  
 ]; // Sorted by "score desc", "numGames asc".  
 
-let noDuplicatesArray = commonFunctions.getObjArrayWithNoDuplicates(teamsArray, true, "score desc", "numGames asc");  
+let noDuplicatesArray = getObjArrayWithNoDuplicates(teamsArray, true, "score desc", "numGames asc");  
 console.log(noDuplicatesArray); // Should contain only unique objects according to comparison fields.  
 /*  
     [  
