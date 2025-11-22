@@ -318,7 +318,7 @@ let teamsArray = [
     { score: 85, numGames: 10 }  
 ]; // Sorted by "score desc", "numGames asc".  
 let searchObj = { score: 85, numGames: 8 };  
-let anIndex = binarySearchObj(teamsArray, searchObj, "score desc", "numGames asc");  
+let anIndex = binarySearchObj(teamsArray, searchObj, 0, "score desc", "numGames asc");
 
 let result = objCompare(searchObj, teamsArray[anIndex], "score desc", "numGames asc"); // 0 -- an object with value { score: 85, numGames: 8} exists at teamsArray[anIndex];   
 ```

@@ -1,6 +1,6 @@
 {
   "name": "some-common-functions-js",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Common functions used with Javascript objects, and field validation functions.",
   "keywords": [
     "validation",
@@ -20,7 +20,10 @@
     "functions",
     "helpers",
     "object utils",
+    "object utilities",
     "object validation",
+    "object array search",
+    "object compaare",
     "nodejs"
   ],
   "repository": {

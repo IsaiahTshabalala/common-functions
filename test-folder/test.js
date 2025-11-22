@@ -3,6 +3,7 @@ Date        Version  Description
 ----------  -------  -----------------------------------------------------------
 2025/11/18  1.0.0    Initial version.
 2025/11/20  1.0.1    Added tests for use as examples in README.md for the functions objCompare, binarySearchObj and getObjArrayWithNoDuplicates.
+2025/11/20  1.0.2    Corrected test code.
 */
 const commonFunctions = require('some-common-functions-js');
 
@@ -106,8 +107,6 @@ teams.sort((team1, team2) => {
 console.log(teams);
 console.log("----END OF objComparison sort test with mixed order test----");
 
-console.log("----END OF binarySearchObj test----");  
-
 console.log(commonFunctions.getPaths(anObject));
 console.log("----END OF getPaths test----");
 
@@ -139,10 +138,10 @@ let teamsArray = [
                 ]; // Sorted by "score desc", "numGames asc".
 
 let searchObj = { score: 85, numGames: 8 };
-let anIndex = (commonFunctions.binarySearchObj(teamsArray, searchObj, "score desc", "numGames asc"));  
+let anIndex = (commonFunctions.binarySearchObj(teamsArray, searchObj, 0, "score desc", "numGames asc"));
 
 console.log(commonFunctions.objCompare(searchObj, teamsArray[anIndex], "score desc", "numGames asc")); // 0 found
-
+console.log("----END OF binarySearchObj test----");  
 
 teamsArray = [
     { score: 90, numGames: 10 },
