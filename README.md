@@ -74,6 +74,28 @@ let result = hasAll(car, "make", "model");
 let result = hasAll(car, "passengerCapacity", "year");  
 // false, because car does not have "passengerCapacity" field.  
 ```
+### `hasOnlyAll(anObject, ...fields)`
+Return `true` if an object contains only all the specified fields, nothing more, nothing less
+***Example***
+```
+const { hasOnlyAll } = require("some-common-functions-js");  
+let car = {  
+    make: "Ford",  
+    model: "Ranger",  
+    year: "2015",  
+    power: "1000kW",  
+    type: "pickup truck"  
+};  
+let result = hasOnlyAll(car, "make", "model");  
+// false, because car has all the specified fields and extra fields.  
+
+let result = hasOnlyAll(car, "passengerCapacity", "year");  
+// false, because car does not have "passengerCapacity" field.  
+
+let result = hasOnlyAll(car, "make", "model", "power", "type");  
+// true, because car has all the specified fields, nothing less, nothing more.  
+
+```
 ---
 
 ## 2. Field Validation Functions
@@ -109,13 +131,13 @@ Compares two values of the same primitive type, according to the sort direction.
 ```
 const { compare } = require("some-common-functions-js");  
 
-let x = "Fong Kong";  
+let x = "Jiāng Fāng";  
 let y = "Isaiah Tshabalala";  
-let result = compare(x, y);  // -1 because "Fong Kong" is before "Isaiah Tshabalala" in ascending order.  
+let result = compare(x, y);  // -1 because "Jiāng Fāng" is before "Isaiah Tshabalala" in ascending order.  
 result = compare(y, x);  
-console.log(result); // 1 because "Isaiah Tshabalala" is after "Fong Kong" in ascending order.  
+console.log(result); // 1 because "Isaiah Tshabalala" is after "Jiāng Fāng" in ascending order.  
 result = compare(x, y, 'desc');  
-console.log(result); // 1 because "Fong Kong" is after "Isaiah Tshabalala" in descending order.
+console.log(result); // 1 because "Jiāng Fāng" is after "Isaiah Tshabalala" in descending order.
 ```
 ### `binarySearch(anArray, searchVal, startFrom = 0, arraySortDir = 'asc')`
 Binary Searches a sorted primitive type array for a value and returns the index.  

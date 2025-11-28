@@ -2,6 +2,7 @@
  * Description: Common functions to be put here.
  * Date        Dev   Version  Description
  * 2025/11/19  ITA   1.00     Genesis.
+ * 2025/11/28  ITA   1.01     Added function hasOnlyAll().
 */
 const loDash = require('lodash');
 
@@ -157,6 +158,16 @@ function hasAll(anObject, ...fields) {
 }
 module.exports.hasAll = hasAll;
 
+/**
+ * Determine whether an object contains only all of the specified fields. Nothing more, nothing less.
+ * @param {*} anObject a Javascript object.
+ * @param  {...string} fields one or field names.
+ * @returns boolean.
+ */
+function hasOnlyAll(anObject, ...fields) {
+    return hasOnly(anObject, ...fields) && hasAll(anObject, ...fields);
+}
+module.exports.hasOnlyAll = hasOnlyAll;
 
 /**Binary Search the sorted primitive data array for a value and return the index.
  * ArraySortDir specifies the direction in which the array is sorted (desc or asc).
