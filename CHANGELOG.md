@@ -28,8 +28,12 @@ Improve README.md documentation.
 - Corrected README documentation.
 
 ## Version 1.0.8 - 2025/11/21 - ITA
-- Corrected test code and README documentation
+- Corrected test code and README documentation.
 
 ## Version 1.0.9 - 2025/11/28 - ITA
 - Provided more documentation in test.js to remind a developer how to symbolic-link (mimick as installed) the package and running the test code.
 - Added new function, hasOnlyAll(), and updated the README.md documentation accordingly.
+
+## Version 1.1.0 - 2025/12/22 - ITA
+- Improved documentation.
+- Moved in more functions to the package: `deepClone(anObject)`, `getSortedObject(anObject)`, `timeStampYyyyMmDd(dateInstance)` and `timeStampString(dateInstance)`.

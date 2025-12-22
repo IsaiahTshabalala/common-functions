@@ -1,12 +1,16 @@
-# JavaScript Object Utilities & Field Validation Functions
+# JavaScript Object Utilities, Field Validation Functions, Array Binary Search, and Date timestamp Functions.
 
 Common functions used for working with JavaScript objects and validating field values.
 
 ---
 ## Installation
-**npm install some-common-functions-js**
-
+```
+npm install some-common-functions-js
+```
 ## 1. JavaScript Object Utilities
+
+### `deepClone(anObject)`
+Returns a deep clone of a plain Javascript object. The clone, while it has field equal to that of the original object, is separate from the original object.
 
 ### `getPaths(anObject)`
 Returns a string array of path/field names inside a JavaScript object.  
@@ -30,8 +34,47 @@ let client = {
 
 let paths = getPaths(client);  
 // ["name", "surname", "address.streetNum", "address.streetName", "address.suburb",  
-//  "address.town", "address.country.name", "address.country.code"]  
+//  "address.town", "address.country.name", "address.country.code"] 
 ```
+### `getSortedObject(anObject)`
+Returns an object with sorted fields, by ordered by field name ascending.  
+***Examples*** 
+``` 
+const client = {
+    firstName: "Isaiah",
+    lastName: "Tshabalala",
+    address: {
+        houseNum: "5520",
+        streetName: "Main Road",
+        mainPlace: "Evaton",
+        subPlace: "Evaton Small Farms",
+        city: "Vereeniging",
+        country: {
+            name: "South Africa",
+            code: "ZA"
+        }
+    }
+};
+
+const sortedObject = getSortedObject(client);
+/*
+    {
+        address: {
+            city: 'Vereeniging',
+            country: {
+                code: 'ZA',
+                name: 'South Africa'
+            },
+            houseNum: '5520',
+            mainPlace: 'Evaton',
+            streetName: 'Main Road',
+            subPlace: 'Evaton Small Farms'
+        },
+        firstName: 'Isaiah',
+        lastName: 'Tshabalala'
+    }
+*/
+``` 
 ### `hasOnly(anObject, ...fields)`
 Returns `true` if the object contains **only** some or all of the specified fields and no others.  
 ***Examples***  
@@ -344,7 +387,7 @@ let anIndex = binarySearchObj(teamsArray, searchObj, 0, "score desc", "numGames 
 
 let result = objCompare(searchObj, teamsArray[anIndex], "score desc", "numGames asc"); // 0 -- an object with value { score: 85, numGames: 8} exists at teamsArray[anIndex];   
 ```
-## 4. `getObjArrayWithNoDuplicates(objArray, firstOfDuplicates, ...comparisonFields)`
+### `getObjArrayWithNoDuplicates(objArray, firstOfDuplicates, ...comparisonFields)`
 Create an array of objects with duplicates eliminated. Taking only the first or last object from each duplicate set. The input array must be sorted according to the values of comparisonFields.  
  * If firstOfDuplicates === true, then the first element in each set of duplicates is taken.  
  * if firstOfDuplicates === false, then the last element is taken from each set of duplicates.  
@@ -382,7 +425,13 @@ console.log(noDuplicatesArray); // Should contain only unique objects according 
     ]  
 */  
 ```
+## 4. Date Timestamp Functions
+### `timeStampYyyyMmDd(dateInstance)`
+Converts the date object to a string of the form CCYY-MM-DD 
+
+### `timeStampString(dateInstance)`
+Converts a date object to a string of the form CCYY-MM-DDThh:mm:ss.ccc, e.g. '2024-02-25T15:00:25.251'
+  
 ---
 ## License
 MIT
-

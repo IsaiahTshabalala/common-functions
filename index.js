@@ -3,9 +3,14 @@
  * Date        Dev   Version  Description
  * 2025/11/19  ITA   1.00     Genesis.
  * 2025/11/28  ITA   1.01     Added function hasOnlyAll().
+ * 2025/12/22  ITA   1.02     Improved documentation of the functions and moved in more functions.
 */
 const loDash = require('lodash');
 
+/**Return true if userName is valid
+ * @param {string} userName
+ * @returns {boolean} true if a userName is valid, otherwise false.
+ */
 function isValidUserName(userName) {
     if (!userName) // The username must be provided.
         return false;
@@ -15,6 +20,10 @@ function isValidUserName(userName) {
 }
 module.exports.isValidUserName = isValidUserName;
 
+/**Return true if a name is valid
+ * @param {string} name
+ * @returns {boolean} true if a name is valid, otherwise false.
+ */
 function isValidName(name) {
     if (!name) // The name must be provided.
         return false;
@@ -24,6 +33,10 @@ function isValidName(name) {
 }
 module.exports.isValidName = isValidName;
 
+/**Return true if userName is valid
+ * @param {string} email
+ * @returns {boolean} true if an email is valid, otherwise false.
+ */
 function isValidEmail(email) {
     if (!email)
         return false;
@@ -33,6 +46,10 @@ function isValidEmail(email) {
 }
 module.exports.isValidEmail = isValidEmail;
 
+/**Return true if userName is valid
+ * @param {string} num phone number
+ * @returns {boolean} true if phone number is valid, otherwise false.
+ */
 function isValidPhoneNum(num) {
     if (!num) // The number must be provided.
         return false;
@@ -42,6 +59,10 @@ function isValidPhoneNum(num) {
 }
 module.exports.isValidPhoneNum = isValidPhoneNum;
 
+/**Return true if the name of an organisation is valid
+ * @param {string} name an organisation name
+ * @returns {boolean} true if an organisation name is valid, otherwise false.
+ */
 function isValidOrganisationName(name) {  
     if (!name) // The name must be provided.
         return false;
@@ -51,6 +72,10 @@ function isValidOrganisationName(name) {
 }
 module.exports.isValidOrganisationName = isValidOrganisationName;
 
+/**Return true if a password is valid
+ * @param {string} password
+ * @returns {boolean} true if a password is valid, otherwise false.
+ */
 function isValidPassword(password) {
     if (!password)
         return false;
@@ -83,9 +108,79 @@ function isValidPassword(password) {
 }
 module.exports.isValidPassword = isValidPassword;
 
+/** Converts the date object to a string of the form CCYY-MM-DD 
+ * @param {Date} dateObj 
+ * @returns {string} string of the form CCYY-MM-DD
+ */
+function timeStampYyyyMmDd(dateObj) {
+    // Convert the date to string form yyyy-mm-dd
+    let year = dateObj.getFullYear();
+    let month = dateObj.getMonth() + 1;
+    month = addLeadingZeros(month, 2);
+    let day = dateObj.getDate();
+    day = addLeadingZeros(day, 2);
+    return `${year}-${month}-${day}`;
+} // function timeStampYYYYMMDd(dateObj) { 
+module.exports.timeStampYyyyMmDd = timeStampYyyyMmDd;
+
+/** Converts a date object to a string of the form CCYY-MM-DDThh:mm:ss.ccc, e.g. '2024-02-25T15:00:25.251'
+ * @param {Date} dateObj
+ * @returns {string} a string of the form CCYY-MM-DDThh:mm:ss.ccc.
+ */
+function timeStampString(dateObj) {
+    let hours = addLeadingZeros(dateObj.getHours(), 2);
+    let minutes = addLeadingZeros(dateObj.getMinutes(), 2);
+    let seconds = addLeadingZeros(dateObj.getSeconds(), 2);
+    let milliSec = addLeadingZeros(dateObj.getMilliseconds(), 3);
+    return `${timeStampYyyyMmDd(dateObj)}T${hours}:${minutes}:${seconds}.${milliSec}`;
+} // function timeStampString(dateObj) {
+module.exports.timeStampString = timeStampString;
+
+
+/** Return a numeric string with trailing zeros.
+ * E.g. addLeadingZeros(9, 3) = '009'
+ * Inputs: 
+ * @param {Number} aNumber an integer or integer string.
+ * @param {Number} newLength the new length of the resulting string.
+ * @returns a string of a number with the specified number of leading zeros.
+ */
+function addLeadingZeros(aNumber, newLength) {
+  
+    let newString = aNumber + '';
+    const howManyZeros = newLength - newString.length;
+    for (let count = 1; count <= howManyZeros; count++)
+        newString = '0' + newString;
+
+    return newString;
+} // function addLeadingZeros(aString, newLength) {
+module.exports.addLeadingZeros = addLeadingZeros;
+
+/**Convert numeric input to ZAR currency format string. 
+ * @param {Number} a number
+ * @returns a string of the form R 256,534.00
+*/
+function toZarCurrencyFormat(number) {
+    const zarCurrencyFormat = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'ZAR'});
+    return zarCurrencyFormat.format(number).replace(/ZAR/gi, 'R');
+}
+module.exports.toZarCurrencyFormat = toZarCurrencyFormat;
+
+/**Return a deep clone of a document object.
+ * By using deep cloning, you create a new object that is entirely separate from the original original.
+ * So that whatever you do to that clone, such as deletion of fields, does not affect the original.
+ * NB. Class instance types will be converted to plain object types due to stringification.
+ * @param {object} obj a plain Javascript object.
+ * @returns a Javascript object that is separate from the original object.
+ */
+function deepClone(obj) {
+    return JSON.parse(JSON.stringify(obj));
+} // function deepClone(obj) { // Return a deep clone of an object.
+module.exports.deepClone = deepClone;
+
+
 /**
  * Get the paths (fields) of the plain Javascript object.
- * @param {object} anObject 
+ * @param {object} anObject  a plain Javascript object.
  * @returns a sorted string array of paths.
  */
 function getPaths(anObject) {
@@ -108,11 +203,32 @@ function getPaths(anObject) {
 } // function getPaths()
 module.exports.getPaths = getPaths;
 
+/** Return an object with sorted fields, by ordered by field name ascending.
+ * This is desirable when equality comparison is done to ensure two objects sharing equal field values
+ * the pass the equality test stringify(object1) === stringify(object2)
+ * @param {object} pObject 
+ * @returns {object} an object with fields sorted in ascending order of field names.
+*/
+function getSortedObject(pObject) {
+
+  const paths = getPaths(pObject);
+  paths.sort();
+  const sortedObject = {};
+
+  for (let index in paths) {
+      const path = paths[index];
+      const value = loDash.get(pObject, path);
+      loDash.set(sortedObject, path, value);
+  } // for (index in paths) {
+  return sortedObject;
+} // function getSortedObject(pObject) {
+module.exports.getSortedObject = getSortedObject;
+
 /**
- * Determine whether an object contains only some or all of the specified fields, and not any other fields.
- * @param {*} anObject a Javascript object.
+ * Determine whether an object contains only 1, some or all of the specified fields, and not any other fields.
+ * @param {object} anObject a Javascript object.
  * @param  {...string} fields one or more field names.
- * @returns boolean.
+ * @returns boolean true or false.
  */
 function hasOnly(anObject, ...fields) {
     if (!fields || !fields.length)
@@ -134,10 +250,10 @@ function hasOnly(anObject, ...fields) {
 module.exports.hasOnly = hasOnly;
 
 /**
- * Determine whether an object contains all of the specified fields. It may have additional fields.
- * @param {*} anObject a Javascript object.
+ * Determine whether an object contains all of the specified fields in addition to other fields.
+ * @param {object} anObject a Javascript object.
  * @param  {...string} fields one or field names.
- * @returns boolean.
+ * @returns boolean true or false.
  */
 function hasAll(anObject, ...fields) {
     if (!fields || !fields.length)
@@ -160,9 +276,9 @@ module.exports.hasAll = hasAll;
 
 /**
  * Determine whether an object contains only all of the specified fields. Nothing more, nothing less.
- * @param {*} anObject a Javascript object.
+ * @param {object} anObject a Javascript object.
  * @param  {...string} fields one or field names.
- * @returns boolean.
+ * @returns boolean true or false.
  */
 function hasOnlyAll(anObject, ...fields) {
     return hasOnly(anObject, ...fields) && hasAll(anObject, ...fields);
@@ -175,6 +291,11 @@ module.exports.hasOnlyAll = hasOnlyAll;
  * otherwise, the index is of closest value in the array that is before or after the search value in terms of sort order.
  * Return -1 for an empty array.
  * This function is to be used also in cases where values are to be inserted into the array while maintaining sort order.
+ * @param {Array} anArray an array of primitve type. All element must be the same type.
+ * @param {*} searchVal search value
+ * @param {number} [startFrom=0] index from which to start. Default: 0.
+ * @param {string} [arraySortDir='asc'] sort direction. Must be 'asc' or 'desc'. Default: 'asc'
+ * @returns {number} an index
  */
 function binarySearch(anArray, searchVal, startFrom = 0, arraySortDir = 'asc') {
 
@@ -212,7 +333,10 @@ module.exports.binarySearch = binarySearch;
  * A return value of -1 means that value1 is before value2 in terms of sort order.
  * A return value of 1 means that value1 is after value2 in terms of sort order.
  * A return value of 0 means that value1 is equal to value2.
- * Sort directions: 'asc', 'desc'. Default is 'asc'.
+ * @param {*} value1
+ * @param {*} value2
+ * @param {string} [sortDir='asc'] 
+ * @returns {number} integer (-1, 0 or 1)
 */
 function compare(value1, value2, sortDir = 'asc') {
     if (!['asc', 'desc'].includes(sortDir))
@@ -236,8 +360,13 @@ module.exports.compare = compare;
  * Return -1 for an empty array.
  * Assumed field data types are Number, String and Date.
  * This function is to be used also in cases where objects are to be inserted into the array while maintaining sort order.
+ * @param {Array<object} objArray an array of Javascript objects.
+ * @param {object} searchObj an object to search for.
+ * @@param {number} [startFrom=0] index from which to start searching.
+ * @param {...string} sortFields one or more search fields.
+ * @returns {number} an index.
  */
-function binarySearchObj(objArray, searchObj, startFrom, ...sortFields) {
+function binarySearchObj(objArray, searchObj, startFrom = 0, ...sortFields) {
     if (objArray.length === 0)
         return -1;
 
@@ -264,7 +393,7 @@ function binarySearchObj(objArray, searchObj, startFrom, ...sortFields) {
 } // function binarySearchObj(objArray, searchObj, ...comparisonFields) {
 module.exports.binarySearchObj = binarySearchObj;
 
-/**Create an array with duplicates eliminated. Taking only the first or last object from each duplicate set.
+/**Create an array with duplicates eliminated, according to certain fields. Taking only the first or last object from each duplicate set.
  * If firstOfDuplicates === true, then the first element in each set of duplicates is taken.
  * if firstOfDuplicates === false, then the last element is taken from each set of duplicates.
  * Assumed field data types are Number, String and Date.
@@ -272,6 +401,10 @@ module.exports.binarySearchObj = binarySearchObj;
  * The value of the comparison field must include both the field name and sort direction.
  * Sort direction assumed to be "asc" if not provided.
  * Examples of comparison fields: "firstName", "lastName desc", "address.province asc", "address.townOrCity".
+ * @param {Array<object>} objArray an input array of objects
+ * @param {boolean} firstOfDuplicates specify whether to take the first or last object in each a duplicate set.
+ * @param {...string} comparisonFields comparison fieds plus sort order.
+ * @returns {Array<object>} an array with no duplicates.
  */
 function getObjArrayWithNoDuplicates(objArray, firstOfDuplicates, ...comparisonFields) {
     function getNextSearchObj(pNext) {
@@ -367,6 +500,9 @@ module.exports.getObjArrayWithNoDuplicates = getObjArrayWithNoDuplicates;
  * Sort directions: 'asc', 'desc'.
  * Examples: 'lastName desc', 'firstName', 'firstName asc', 'address.provinceName asc'.
  * If sort direction is not provided, then it is assumed to be ascending.
+ * @param {object} obj1 first object to compare
+ * @param {object} obj2 second object to compare
+ * @returns {number} a comparison value of 1, 0 or -1
 */
 function objCompare(obj1, obj2, ...comparisonFields) {
     if (comparisonFields.length === 0)

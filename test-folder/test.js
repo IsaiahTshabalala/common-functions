@@ -129,7 +129,12 @@ console.log(commonFunctions.hasOnlyAll(anObject, "firstName", "lastName", "addre
                                     "address.streetName", "address.city", "address.country.name", "address.country.code"));
                                     // false, because anObject has address.mainPlace and address.subPlace which are extra to the specified fields.
 
-console.log("----END OF hasOnlyAll test----");                             
+console.log("----END OF hasOnlyAll test----");    
+
+console.log(commonFunctions.getSortedObject(anObject));
+
+console.log("----END OF getSortedObject test----");    
+
 
 let myArray = [100, 101, 102, 103, 104, 105, 106, 107];  
 console.log(commonFunctions.binarySearch(myArray, 103, 4)); // 4
