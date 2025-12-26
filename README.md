@@ -527,15 +527,9 @@ Converts the date object to a string of the form CCYY-MM-DD
 ### `timeStampString(dateInstance)`
 Converts a date object to a string of the form CCYY-MM-DDThh:mm:ss.ccc, e.g. '2024-02-25T15:00:25.251'
   
-### `addLeadingZeros(aNumber, newLength)` {
+### `addLeadingZeros(aNumber, newLength)`
+Add leading zeros to a numerical string.  E.g. addLeadingZeros(9, 3) = '009'
   
-    let newString = aNumber + '';
-    const howManyZeros = newLength - newString.length;
-    for (let count = 1; count <= howManyZeros; count++)
-        newString = '0' + newString;
-
-    return newString;
-} // function addLeadingZeros(aString, newLength) {
 ---
 ## License
 MIT

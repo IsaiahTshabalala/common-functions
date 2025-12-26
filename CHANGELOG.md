@@ -42,3 +42,6 @@ Improve README.md documentation.
 - Removed lodash dependency and re-implemented the get() and set() object functions, reducing package size.
 - Re-implemented the getSortedObj() function to no longer use the get() object function.
 - Improved the duplicate removal process in getArrayWithNoDuplicates() function, so as to be more reliable across all cases. Implemented the new getNextDifferentObject() function in the light of that.
+
+## Version 1.1.2 - 2025/12/26 - ITA
+Corrected a minor error in the README documentation.
