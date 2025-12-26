@@ -4,8 +4,9 @@
  * 2025/11/19  ITA   1.00     Genesis.
  * 2025/11/28  ITA   1.01     Added function hasOnlyAll().
  * 2025/12/22  ITA   1.02     Improved documentation of the functions and moved in more functions.
+ * 2025/12/30  ITA   1.03     Removed lodash dependency by re-implementing get() and set() object functions, significantly reducing this package size.
+ *                            Added function getNextDifferent() to deal better with duplicate removal from arrays of objects. *                            .
 */
-const loDash = require('lodash');
 
 /**Return true if userName is valid
  * @param {string} userName
@@ -203,26 +204,86 @@ function getPaths(anObject) {
 } // function getPaths()
 module.exports.getPaths = getPaths;
 
-/** Return an object with sorted fields, by ordered by field name ascending.
+/** Return an object with sorted fields,  ordered by field name ascending.
  * This is desirable when equality comparison is done to ensure two objects sharing equal field values
  * the pass the equality test stringify(object1) === stringify(object2)
  * @param {object} pObject 
  * @returns {object} an object with fields sorted in ascending order of field names.
 */
 function getSortedObject(pObject) {
-
-  const paths = getPaths(pObject);
-  paths.sort();
+  const objClone = deepClone(pObject);
+  const paths = [];
   const sortedObject = {};
 
+  // Obtain the outermost fields and sort them.
+  for (let field in objClone) {
+    paths.push(field);
+  }
+  paths.sort();
+
+  // Assign the sorted fields to the new object.
   for (let index in paths) {
-      const path = paths[index];
-      const value = loDash.get(pObject, path);
-      loDash.set(sortedObject, path, value);
-  } // for (index in paths) {
+    const field = paths[index];
+    if (Object.prototype.toString.call(objClone[field]) === '[object Object]') {
+        sortedObject[field] = getSortedObject(objClone[field]);
+    }
+    else {
+        sortedObject[field] = objClone[field];
+    } //
+  } // for (let field in paths) {
+
   return sortedObject;
 } // function getSortedObject(pObject) {
 module.exports.getSortedObject = getSortedObject;
+
+/** Get the value of a field specified by the path from an object.
+ * @param {object} anObject a Javascript object.
+ * @param {string} path a path specifying the field whose value is to be obtained.
+ * @returns {*} the value of the field specified by the path.
+ */
+function get(anObject, path) {
+    if (getPaths(anObject).includes(path) === false) {
+        console.log(hasAll(anObject, path), path, anObject, getPaths(anObject));
+        throw new Error(`Path ${path} does not exist on the object.`);
+    }
+    let paths = path.split('.');
+    let currentObj = deepClone(anObject);
+
+    let value = currentObj[paths[0]];
+    if (paths.length > 1) {
+        paths.splice(0, 1);
+        return get(value,  paths.join('.'));
+    }
+    else {
+        return value;
+    }
+}
+module.exports.get = get;
+
+/** Set the value of a field specified by the path on an object.
+ * @param {object} anObject a Javascript object.
+ * @param {string} path a path specifying the field whose value is to be set.
+ * @param {*} value the value to set.
+ */
+function set(anObject, path, value) {
+    /*if (hasAll(anObject, path) === false) {
+        throw new Error(`Path ${path} does not exist on the object.`);
+    }*/
+
+    let paths = path.split('.');
+    if (paths.length > 1) {
+        if (!anObject[paths[0]]) {
+            anObject[paths[0]] = {};
+        }
+        const subObject = anObject[paths[0]];
+        paths.splice(0, 1);
+        set(subObject, paths.join('.'), value);
+    }
+    else {
+        anObject[paths[0]] = value;
+    }
+}
+module.exports.set = set;
 
 /**
  * Determine whether an object contains only 1, some or all of the specified fields, and not any other fields.
@@ -393,6 +454,37 @@ function binarySearchObj(objArray, searchObj, startFrom = 0, ...sortFields) {
 } // function binarySearchObj(objArray, searchObj, ...comparisonFields) {
 module.exports.binarySearchObj = binarySearchObj;
 
+/**Get the index of the first element in an object array that is different from the target element 
+ * according to the comparison fields.
+ * @param {Array<object>} objArray an array of objects
+ * @param {object} targetObj target object
+ * @param {number} startFrom index from which to start searching
+ * @param {...string} comparisonFields comparison fields plus sort order.
+ * @returns index of the next different object.
+ */
+function getNextDifferent(objArray, targetObj, startFrom, ...comparisonFields) {
+    let start = startFrom,
+          end = objArray.length - 1;
+
+    // If target object is to the right of objArray[start], then throw an error..
+    if (objCompare(targetObj, objArray[start], ...comparisonFields) > 0) 
+        throw new Error('targetObj is to the right (\'greater than\') objArray[startFrom].');
+         
+    while (start < end) {   
+        let mid = Math.trunc((start + end) / 2);
+        if (objCompare(targetObj, objArray[mid], ...comparisonFields) === 0) {
+            start = mid + 1;
+        }
+        else if (objCompare(targetObj, objArray[mid], ...comparisonFields) < 0) {
+            end = mid;
+        }
+    }
+    if (objCompare(targetObj, objArray[start], ...comparisonFields) === 0)
+        return -1;
+    return start;
+}
+module.exports.getNextDifferent = getNextDifferent;
+
 /**Create an array with duplicates eliminated, according to certain fields. Taking only the first or last object from each duplicate set.
  * If firstOfDuplicates === true, then the first element in each set of duplicates is taken.
  * if firstOfDuplicates === false, then the last element is taken from each set of duplicates.
@@ -407,89 +499,34 @@ module.exports.binarySearchObj = binarySearchObj;
  * @returns {Array<object>} an array with no duplicates.
  */
 function getObjArrayWithNoDuplicates(objArray, firstOfDuplicates, ...comparisonFields) {
-    function getNextSearchObj(pNext) {
-        const nextObj = {...objArray[next]};
-        let lastField;
-        if (comparisonFields.length > 0)
-            lastField = comparisonFields[comparisonFields.length - 1].split(' ');
-        else
-            throw new Error('Supply atleast 1 comparisonFields parameter.');
-
-        const lastFieldName = lastField[0];
-        const sortDir = lastField.length > 1? lastField[1] : 'asc';
-        const lastFieldValue = loDash.get(nextObj, lastFieldName);
-
-        if (typeof lastFieldValue === 'number') {
-            if (sortDir === 'asc')
-                loDash.set(nextObj, lastFieldName, 1e-10 + lastFieldValue);
-            else
-                loDash.set(nextObj, lastFieldName, -1e-10 + lastFieldValue);
-        }
-        else if (typeof lastFieldValue === 'string') { // instance of String
-            if (sortDir === 'asc')
-                loDash.set(nextObj, lastFieldName, lastFieldValue + ' ');
-            else
-                loDash.set(nextObj, lastFieldName, ' ' + lastFieldValue);
-        }
-        else if (lastFieldValue instanceof Date) {
-            if (sortDir === 'asc')
-                loDash.set(nextObj, lastFieldName, new Date(1 + lastFieldValue.getTime()));
-            else
-                loDash.set(nextObj, lastFieldName, new Date(-1 + lastFieldValue.getTime()));
-        }
-        else
-            throw new Error(`${lastFieldName} must be type Number, String or Date`);
-
-        return nextObj;
-    } // function getNextSearchObj(pNext)
 
     if (objArray.length <= 1)
         return [...objArray];
 
-    if (![true, false].includes(firstOfDuplicates))
-        throw new Error(`firstOfDuplicates must be one of ${[true, false]}`);
+    if (typeof firstOfDuplicates !== 'boolean')
+        throw new Error(`firstOfDuplicates must be boolean true or false.`);
 
     const noDuplicates = [];
-
-    let next = 0;
-    let nextSearchObj;
-    if ((firstOfDuplicates)) {
-        noDuplicates.push(objArray[next]);
-    }        
-    nextSearchObj = getNextSearchObj(objArray[next]);
-
-    while (next < objArray.length) {
-        // The aim is to jump to the next element that is not a duplicate of objArray[next].
-        next = binarySearchObj(objArray, nextSearchObj, next, ...comparisonFields);
-        let comparison = objCompare(objArray[next], nextSearchObj, ...comparisonFields);
-        if (comparison < 0) {
-            if (firstOfDuplicates) {
-                next++;
-                if  (next < objArray.length) {
-                    noDuplicates.push(objArray[next]);
-                    nextSearchObj = getNextSearchObj(objArray[next]);
-                }
-            }
-            else  {
-                noDuplicates.push(objArray[next]);
-                next++;
-                if (next < objArray.length)
-                    nextSearchObj = getNextSearchObj(objArray[next]);
-            }
-            continue;
+    let idx;
+    let grpStart = 0; // Start index of current duplicate group.
+    while (grpStart < objArray.length - 1) {
+        if (firstOfDuplicates) {
+            noDuplicates.push(objArray[grpStart]);
         }
-        else {
-            if (!firstOfDuplicates) {
-                noDuplicates.push(objArray[next]);
-            }
-            else {
-                noDuplicates.push(objArray[next]);
-            }
+
+        grpStart = getNextDifferent(objArray, objArray[grpStart], grpStart + 1, ...comparisonFields);
+        if (grpStart < 0)
+            break; // No more different objects.
+
+        let grpEnd = grpStart - 1;
+        if (!firstOfDuplicates) {
+            noDuplicates.push(objArray[grpEnd]);
         }
-        
-        nextSearchObj = getNextSearchObj(objArray[next]);
-        next++;
-    } // while (comparison !== 0 && next < objArray.length) {
+        idx = grpStart;
+    }
+
+    if (objCompare(objArray[idx], noDuplicates[noDuplicates.length - 1], ...comparisonFields) !== 0)
+        noDuplicates.push(objArray[idx]); // Add the last object.
 
     return noDuplicates;
 } // function getObjArrayWithNoDuplicates(objArray, ...comparisonFields) {
@@ -519,8 +556,8 @@ function objCompare(obj1, obj2, ...comparisonFields) {
         if (!sortDirections.includes(sortDir))
             throw new Error('Sort direction must be one of ' + sortDirections.toString());
 
-        const value1 = loDash.get(obj1, fieldName);
-        const value2 = loDash.get(obj2, fieldName);
+        const value1 = get(obj1, fieldName);
+        const value2 = get(obj2, fieldName);
 
         const returnValue = (sortDir === 'desc'? -1: 1);
         if (value1 > value2)

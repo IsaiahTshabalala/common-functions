@@ -33,7 +33,12 @@ Improve README.md documentation.
 ## Version 1.0.9 - 2025/11/28 - ITA
 - Provided more documentation in test.js to remind a developer how to symbolic-link (mimick as installed) the package and running the test code.
 - Added new function, hasOnlyAll(), and updated the README.md documentation accordingly.
-
+  
 ## Version 1.1.0 - 2025/12/22 - ITA
 - Improved documentation.
 - Moved in more functions to the package: `deepClone(anObject)`, `getSortedObject(anObject)`, `timeStampYyyyMmDd(dateInstance)` and `timeStampString(dateInstance)`.
+  
+## Version 1.1.1 - 2025/12/26 - ITA
+- Removed lodash dependency and re-implemented the get() and set() object functions, reducing package size.
+- Re-implemented the getSortedObj() function to no longer use the get() object function.
+- Improved the duplicate removal process in getArrayWithNoDuplicates() function, so as to be more reliable across all cases. Implemented the new getNextDifferentObject() function in the light of that.

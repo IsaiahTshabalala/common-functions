@@ -6,16 +6,18 @@ Common functions used for working with JavaScript objects and validating field v
 ## Installation
 ```
 npm install some-common-functions-js
-```
+```  
+  
 ## 1. JavaScript Object Utilities
-
+  
 ### `deepClone(anObject)`
-Returns a deep clone of a plain Javascript object. The clone, while it has field equal to that of the original object, is separate from the original object.
-
+Returns a deep clone of a plain Javascript object. The clone, while it has field equal to that of the original object, is separate from the original object.  
+  
 ### `getPaths(anObject)`
 Returns a string array of path/field names inside a JavaScript object.  
+  
 ***Example***  
-```
+```  
 const { getPaths } = require("some-common-functions-js");  
 let client = {  
     name: "Jack",  
@@ -35,11 +37,14 @@ let client = {
 let paths = getPaths(client);  
 // ["name", "surname", "address.streetNum", "address.streetName", "address.suburb",  
 //  "address.town", "address.country.name", "address.country.code"] 
-```
+```  
+  
 ### `getSortedObject(anObject)`
-Returns an object with sorted fields, by ordered by field name ascending.  
-***Examples*** 
-``` 
+Returns an object with sorted fields, ordered by field name ascending.  
+  
+***Examples***  
+```  
+const { get } = require("common-functions-js");
 const client = {
     firstName: "Isaiah",
     lastName: "Tshabalala",
@@ -74,11 +79,66 @@ const sortedObject = getSortedObject(client);
         lastName: 'Tshabalala'
     }
 */
-``` 
+```  
+  
+### `get(anObject, path)`
+Returns the value of an object at the specified path.  
+Can take the place of lodash get() function.
+  
+***Examples***  
+```  
+const { get }  = require("some-common-functions-js");
+const client = {
+    firstName: "Isaiah",
+    lastName: "Tshabalala",
+    address: {
+        houseNum: "5520",
+        streetName: "Main Road",
+        mainPlace: "Evaton",
+        subPlace: "Evaton Small Farms",
+        city: "Vereeniging",
+        country: {
+            name: "South Africa",
+            code: "ZA"
+        }
+    }
+};
+
+let result = get(client, "address.country"); 
+// { name: "South Africa", code: "ZA" }
+
+result = get(client, "address.country.code"); 
+// "ZA"
+```  
+  
+### `set(anObject, path)`
+Sets the value of an object at the specified path.  
+Can take the place of lodash set() function.
+  
+***Examples***   
+```  
+const { set } = require("some-common-functions-js");
+
+let emptyObj = {}; 
+set(emptyObj, "address.country.name", "South Africa");
+set(emptyObj, "address.country.code", "ZA");
+set(emptyObj, "firstName", "Isaiah");
+set(emptyObj, "lastName", "Tshabalala");
+console.log(emptyObj);
+/*
+{
+  address: { country: { name: 'South Africa', code: 'ZA' } },
+  firstName: 'Isaiah',
+  lastName: 'Tshabalala'
+}
+*/
+```  
+  
 ### `hasOnly(anObject, ...fields)`
 Returns `true` if the object contains **only** some or all of the specified fields and no others.  
+  
 ***Examples***  
-```
+```  
 const { hasOnly } = require("some-common-functions-js");  
 
 let car = {  
@@ -97,12 +157,14 @@ result = hasOnly(car, "maxSpeed", "gvm", "power");
 
 result = hasOnly(car, "make", "model");  
 // false, because car has fields other than the specified fields.  
-```
+```  
+  
 ### `hasAll(anObject, ...fields)`
 Returns `true` if the object contains **all** the specified fields.  
 The object may contain additional fields.  
+  
 ***Examples***  
-```
+```  
 const { hasAll } = require("some-common-functions-js");  
 let car = {  
     make: "Ford",  
@@ -116,11 +178,13 @@ let result = hasAll(car, "make", "model");
 
 let result = hasAll(car, "passengerCapacity", "year");  
 // false, because car does not have "passengerCapacity" field.  
-```
+```  
+  
 ### `hasOnlyAll(anObject, ...fields)`
-Return `true` if an object contains only all the specified fields, nothing more, nothing less
-***Example***
-```
+Return `true` if an object contains only all the specified fields, nothing more, nothing less  
+  
+***Examples***  
+```  
 const { hasOnlyAll } = require("some-common-functions-js");  
 let car = {  
     make: "Ford",  
@@ -327,20 +391,16 @@ console.log(objArray);
 */  
 let teams = [  
     {  
-        score: 85,  
-        numGames: 10  
+        score: 85, numGames: 10  
     },  
     {  
-        score: 90,  
-        numGames: 12  
+        score: 90, numGames: 12  
     },  
     {  
-        score: 85,  
-        numGames: 8  
+        score: 85, numGames: 8  
     },  
     {  
-        score: 90,  
-        numGames: 10  
+        score: 90, numGames: 10  
     }  
 ];  
 // Using objCompare to sort fields where there are mixed sort directions.  
@@ -396,7 +456,7 @@ Create an array of objects with duplicates eliminated. Taking only the first or 
  * The value of the comparison field must include both the field name and sort direction.  
  * Sort direction assumed to be "asc" if not provided.  
  * Examples of comparison fields: "firstName", "lastName desc", "address.province asc", "address.townOrCity".  
-
+  
 ***Example***  
 ```
 const { getObjArrayWithNoDuplicates } = require("some-common-functions-js");  
@@ -424,7 +484,42 @@ console.log(noDuplicatesArray); // Should contain only unique objects according 
         { score: 85, numGames: 10 }  
     ]  
 */  
-```
+```  
+  
+### `getNextDifferent(objArray, targetObj, startFrom, ...comparisonFields)` 
+Get the index in the array of objects, of the next element that is distinct from the target object.  
+Comparison fields must match the field & sort order of the object array.  
+Examples of comparison fields: "firstName", "lastName desc", "address.province asc", "address.townOrCity".  
+  
+***Example***  
+```  
+const { getNextDifferentObj } = require("some-common-functions-js");
+
+teamsArray = [
+    { score: 90, numGames: 10 },
+    { score: 90, numGames: 10 },
+    { score: 90, numGames: 10 },
+    { score: 90, numGames: 12 },
+    { score: 90, numGames: 12 },
+    { score: 90, numGames: 12 },
+    { score: 85, numGames: 8 },
+    { score: 85, numGames: 8 },
+    { score: 85, numGames: 10 },
+    { score: 85, numGames: 10 },
+    { score: 85, numGames: 10 }
+]; // Sorted by "score desc", "numGames asc".
+
+let next = getNextDifferentObj(teamsArray, { score: 85, numGames: 8 }, 0, "score desc", "numGames asc"); 
+// Throws an error because the startFrom index is to the left ('less than') the target object in terms of the field sort order.
+
+next = getNextDifferentObj(teamsArray, { score: 90, numGames: 10 }, 0, "score desc", "numGames asc");
+// 3
+
+
+next = getNextDifferentObj(teamsArray, { score: 85, numGames: 10 }, 0, "score desc", "numGames asc");
+// -1
+```  
+  
 ## 4. Date Timestamp Functions
 ### `timeStampYyyyMmDd(dateInstance)`
 Converts the date object to a string of the form CCYY-MM-DD 
@@ -432,6 +527,15 @@ Converts the date object to a string of the form CCYY-MM-DD
 ### `timeStampString(dateInstance)`
 Converts a date object to a string of the form CCYY-MM-DDThh:mm:ss.ccc, e.g. '2024-02-25T15:00:25.251'
   
+### `addLeadingZeros(aNumber, newLength)` {
+  
+    let newString = aNumber + '';
+    const howManyZeros = newLength - newString.length;
+    for (let count = 1; count <= howManyZeros; count++)
+        newString = '0' + newString;
+
+    return newString;
+} // function addLeadingZeros(aString, newLength) {
 ---
 ## License
 MIT
