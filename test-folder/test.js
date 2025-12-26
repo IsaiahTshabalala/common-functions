@@ -6,6 +6,7 @@ Date        Version  Description
 2025/11/20  1.0.2    Corrected test code.
 */
 const commonFunctions = require('some-common-functions-js');
+const { set } = require('..');
 /**Note to the developer: LOCAL TESTING INSTRUCTIONS:
  * To "publish" your package locally, run "npm link" from the root folder of this project,
  * then run "npm link some-common-functions-js" from test-folder.
@@ -25,7 +26,8 @@ let anObject = {
             name: "South Africa",
             code: "ZA"
         }
-    }
+    },
+    caseNums: [1001, 1002, 1003]
 };
 
 let anObject2 = {
@@ -74,7 +76,7 @@ objArray.sort((obj1, obj2)=> {
                                                         obj1, obj2, 
                                                         "address.country.name",
                                                         "address.city",
-                                                        "adress.mainPlace",
+                                                        "address.mainPlace",
                                                         "address.subPlace",
                                                         "lastName",
                                                         "firstName"
@@ -180,6 +182,18 @@ teamsArray = [
     { score: 85, numGames: 10 }
 ]; // Sorted by "score desc", "numGames asc".
 
-let noDuplicatesArray = commonFunctions.getObjArrayWithNoDuplicates(teamsArray, true, "score desc", "numGames asc");  
+let noDuplicatesArray = commonFunctions.getObjArrayWithNoDuplicates(teamsArray, false, "score desc", "numGames asc");  
 console.log(noDuplicatesArray); // Should contain only unique objects according to comparison fields.
 console.log("----END OF getObjArrayWithNoDuplicates test----");
+
+let nextDiffIdx = commonFunctions.getNextDifferent(teamsArray, { score: 85, numGames: 10 }, 8, "score desc", "numGames asc");
+console.log(nextDiffIdx); // 3, index of first different object after index 0.
+console.log("----END OF getNextDifferent test----");
+
+let emptyObj = {}; 
+set(emptyObj, "address.country.name", "South Africa");
+set(emptyObj, "address.country.code", "ZA");
+set(emptyObj, "firstName", "Isaiah");
+set(emptyObj, "lastName", "Tshabalala");
+console.log(emptyObj);
+console.log("----END OF set test----");
