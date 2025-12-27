@@ -45,3 +45,10 @@ Improve README.md documentation.
 
 ## Version 1.1.2 - 2025/12/26 - ITA
 Corrected a minor error in the README documentation.
+
+## Version 1.1.3 - 2025/12/27 - ITA
+- Improved getObjArrayWithNoDuplicates() and getNextDifferent functions to handle more test cases.
+- Added the unset() function.
+
+## Version 1.1.4 - 2025/12/27 - ITA
+Added the outstanding change log for the previous version.
