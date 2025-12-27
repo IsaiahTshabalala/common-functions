@@ -134,6 +134,30 @@ console.log(emptyObj);
 */
 ```  
   
+### `unset(anObject, path)`  
+Remove a field from an object at the specified path.  
+Can take the place of lodash unset() function.  
+  
+***Example***  
+```
+const {unset} = require("some-common-functions-js");
+let testObj = {
+    firstName: 'John',
+    lastName: 'Rambo',
+    address: { country: { name: 'South Africa', code: 'ZA' } }
+};
+
+unset(testObj, "address.country.code");
+unset(testObj, "lastName");
+console.log(testObj); // Expecting to have "address.country.code" and "lastName" removed.
+/*
+    {
+        firstName: 'John',
+        address: { country: { name: 'South Africa' } }
+    }
+*/
+```  
+    
 ### `hasOnly(anObject, ...fields)`
 Returns `true` if the object contains **only** some or all of the specified fields and no others.  
   
@@ -460,59 +484,73 @@ Create an array of objects with duplicates eliminated. Taking only the first or 
 ***Example***  
 ```
 const { getObjArrayWithNoDuplicates } = require("some-common-functions-js");  
-let teamsArray = [  
-    { score: 90, numGames: 10 },  
-    { score: 90, numGames: 10 },  
-    { score: 90, numGames: 10 },  
-    { score: 90, numGames: 12 },  
-    { score: 90, numGames: 12 },  
-    { score: 90, numGames: 12 },  
-    { score: 85, numGames: 8 },  
-    { score: 85, numGames: 8 },  
-    { score: 85, numGames: 10 },  
-    { score: 85, numGames: 10 },  
-    { score: 85, numGames: 10 }  
+let teamsArray = [
+    { score: 90, numGames: 10, name: "John" },
+    { score: 90, numGames: 10, name: "Jane" },
+    { score: 90, numGames: 10, name: "Bob" },
+    { score: 90, numGames: 12, name: "Alice" },
+    { score: 90, numGames: 12, name: "Charlie" },
+    { score: 90, numGames: 12, name: "David" },
+    { score: 85, numGames: 8, name: "Eve" },
+    { score: 85, numGames: 8, name: "Frank" },
+    { score: 85, numGames: 10, name: "Grace" },
+    { score: 85, numGames: 10, name: "Henry" },
+    { score: 85, numGames: 10, name: "Ivy" }
 ]; // Sorted by "score desc", "numGames asc".  
 
 let noDuplicatesArray = getObjArrayWithNoDuplicates(teamsArray, true, "score desc", "numGames asc");  
-console.log(noDuplicatesArray); // Should contain only unique objects according to comparison fields.  
+console.log(noDuplicatesArray);
+// Should contain only unique objects according to comparison fields. First object per duplicate group.
 /*  
-    [  
-        { score: 90, numGames: 10 },  
-        { score: 90, numGames: 12 },  
-        { score: 85, numGames: 8 },  
-        { score: 85, numGames: 10 }  
-    ]  
+    [
+        { score: 90, numGames: 10, name: 'John' },
+        { score: 90, numGames: 12, name: 'Alice' },
+        { score: 85, numGames: 8, name: 'Eve' },
+        { score: 85, numGames: 10, name: 'Grace' }
+    ]
 */  
+
+let noDuplicatesArray = getObjArrayWithNoDuplicates(teamsArray, true, "score desc", "numGames asc");  
+console.log(noDuplicatesArray);
+// Should contain unique objects according to comparison fields. Last object per duplicate group.
+/*
+    [
+        { score: 90, numGames: 10, name: 'Bob' },
+        { score: 90, numGames: 12, name: 'David' },
+        { score: 85, numGames: 8, name: 'Frank' },
+        { score: 85, numGames: 10, name: 'Ivy' }
+    ]
+*/
 ```  
   
 ### `getNextDifferent(objArray, targetObj, startFrom, ...comparisonFields)` 
 Get the index in the array of objects, of the next element that is distinct from the target object.  
-Comparison fields must match the field & sort order of the object array.  
+Comparison fields must match the field & sort order of the object array. 
+Throw an error if the target object is greater than objArray[startFrom] in terms of sort order.
 Examples of comparison fields: "firstName", "lastName desc", "address.province asc", "address.townOrCity".  
   
 ***Example***  
 ```  
-const { getNextDifferentObj } = require("some-common-functions-js");
+const { getNextDifferent } = require("some-common-functions-js");
 
 teamsArray = [
-    { score: 90, numGames: 10 },
-    { score: 90, numGames: 10 },
-    { score: 90, numGames: 10 },
-    { score: 90, numGames: 12 },
-    { score: 90, numGames: 12 },
-    { score: 90, numGames: 12 },
-    { score: 85, numGames: 8 },
-    { score: 85, numGames: 8 },
-    { score: 85, numGames: 10 },
-    { score: 85, numGames: 10 },
-    { score: 85, numGames: 10 }
+    { score: 90, numGames: 10, name: "John" },
+    { score: 90, numGames: 10, name: "Jane" },
+    { score: 90, numGames: 10, name: "Bob" },
+    { score: 90, numGames: 12, name: "Alice" },
+    { score: 90, numGames: 12, name: "Charlie" },
+    { score: 90, numGames: 12, name: "David" },
+    { score: 85, numGames: 8, name: "Eve" },
+    { score: 85, numGames: 8, name: "Frank" },
+    { score: 85, numGames: 10, name: "Grace" },
+    { score: 85, numGames: 10, name: "Henry" },
+    { score: 85, numGames: 10, name: "Ivy" }
 ]; // Sorted by "score desc", "numGames asc".
 
-let next = getNextDifferentObj(teamsArray, { score: 85, numGames: 8 }, 0, "score desc", "numGames asc"); 
+let next = getNextDifferent(teamsArray, { score: 85, numGames: 8 }, 0, "score desc", "numGames asc"); 
 // Throws an error because the startFrom index is to the left ('less than') the target object in terms of the field sort order.
 
-next = getNextDifferentObj(teamsArray, { score: 90, numGames: 10 }, 0, "score desc", "numGames asc");
+next = getNextDifferent(teamsArray, { score: 90, numGames: 10 }, 0, "score desc", "numGames asc");
 // 3
 
 

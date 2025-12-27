@@ -4,9 +4,11 @@ Date        Version  Description
 2025/11/18  1.0.0    Initial version.
 2025/11/20  1.0.1    Added tests for use as examples in README.md for the functions objCompare, binarySearchObj and getObjArrayWithNoDuplicates.
 2025/11/20  1.0.2    Corrected test code.
+2025/12/26  1.0.3    Added further tests for the getArrayWithNoDuplicates() function.
+                     Added tests for get() and unset() functions.
 */
 const commonFunctions = require('some-common-functions-js');
-const { set } = require('..');
+const { set, get, unset } = commonFunctions;
 /**Note to the developer: LOCAL TESTING INSTRUCTIONS:
  * To "publish" your package locally, run "npm link" from the root folder of this project,
  * then run "npm link some-common-functions-js" from test-folder.
@@ -169,24 +171,24 @@ console.log(commonFunctions.objCompare(searchObj, teamsArray[anIndex], "score de
 console.log("----END OF binarySearchObj test----");  
 
 teamsArray = [
-    { score: 90, numGames: 10 },
-    { score: 90, numGames: 10 },
-    { score: 90, numGames: 10 },
-    { score: 90, numGames: 12 },
-    { score: 90, numGames: 12 },
-    { score: 90, numGames: 12 },
-    { score: 85, numGames: 8 },
-    { score: 85, numGames: 8 },
-    { score: 85, numGames: 10 },
-    { score: 85, numGames: 10 },
-    { score: 85, numGames: 10 }
+    { score: 90, numGames: 10, name: "John" },
+    { score: 90, numGames: 10, name: "Jane" },
+    { score: 90, numGames: 10, name: "Bob" },
+    { score: 90, numGames: 12, name: "Alice" },
+    { score: 90, numGames: 12, name: "Charlie" },
+    { score: 90, numGames: 12, name: "David" },
+    { score: 85, numGames: 8, name: "Eve" },
+    { score: 85, numGames: 8, name: "Frank" },
+    { score: 85, numGames: 10, name: "Grace" },
+    { score: 85, numGames: 10, name: "Henry" },
+    { score: 85, numGames: 10, name: "Ivy" }
 ]; // Sorted by "score desc", "numGames asc".
 
-let noDuplicatesArray = commonFunctions.getObjArrayWithNoDuplicates(teamsArray, false, "score desc", "numGames asc");  
+let noDuplicatesArray = commonFunctions.getObjArrayWithNoDuplicates(teamsArray, true, "score desc", "numGames asc");  
 console.log(noDuplicatesArray); // Should contain only unique objects according to comparison fields.
 console.log("----END OF getObjArrayWithNoDuplicates test----");
 
-let nextDiffIdx = commonFunctions.getNextDifferent(teamsArray, { score: 85, numGames: 10 }, 8, "score desc", "numGames asc");
+let nextDiffIdx = commonFunctions.getNextDifferent(teamsArray, { score: 90, numGames: 10 }, 0, "score desc", "numGames asc");
 console.log(nextDiffIdx); // 3, index of first different object after index 0.
 console.log("----END OF getNextDifferent test----");
 
@@ -197,3 +199,17 @@ set(emptyObj, "firstName", "Isaiah");
 set(emptyObj, "lastName", "Tshabalala");
 console.log(emptyObj);
 console.log("----END OF set test----");
+
+console.log(get(emptyObj, "address.country.name")); // "South Africa"
+console.log(get(emptyObj, "firstName")); // "Isaiah"
+console.log("----END OF get test----");
+
+let testObj = {
+    firstName: 'John',
+    lastName: 'Rambo',
+    address: { country: { name: 'South Africa', code: 'ZA' } },
+}
+unset(testObj, "address.country.code");
+unset(testObj, "lastName");
+console.log(testObj);
+console.log("----END OF unset test----");

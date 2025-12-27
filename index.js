@@ -5,7 +5,9 @@
  * 2025/11/28  ITA   1.01     Added function hasOnlyAll().
  * 2025/12/22  ITA   1.02     Improved documentation of the functions and moved in more functions.
  * 2025/12/30  ITA   1.03     Removed lodash dependency by re-implementing get() and set() object functions, significantly reducing this package size.
- *                            Added function getNextDifferent() to deal better with duplicate removal from arrays of objects. *                            .
+ *                            Added function getNextDifferent() to deal better with duplicate removal from arrays of objects.
+ * 2026/01/02  ITA   1.04     Improved the functions getNoDuplicatesArray() and getNextDifferent() to handle more test cases.
+ *                            Added function unset().
 */
 
 /**Return true if userName is valid
@@ -266,10 +268,6 @@ module.exports.get = get;
  * @param {*} value the value to set.
  */
 function set(anObject, path, value) {
-    /*if (hasAll(anObject, path) === false) {
-        throw new Error(`Path ${path} does not exist on the object.`);
-    }*/
-
     let paths = path.split('.');
     if (paths.length > 1) {
         if (!anObject[paths[0]]) {
@@ -284,6 +282,24 @@ function set(anObject, path, value) {
     }
 }
 module.exports.set = set;
+
+/** Unset the value of a field specified by the path on an object.
+ * @param {object} anObject a Javascript object.
+ * @param {string} path a path specifying the field whose value is to be set.
+ * @param {*} value the value to set.
+ */
+function unset(anObject, path) {
+    let paths = path.split('.');
+    if (paths.length > 1) {
+        const subObject = anObject[paths[0]];
+        paths.splice(0, 1);
+        unset(subObject, paths.join('.'));
+    }
+    else {
+        delete anObject[paths[0]];
+    }
+}
+module.exports.unset = unset;
 
 /**
  * Determine whether an object contains only 1, some or all of the specified fields, and not any other fields.
@@ -466,9 +482,14 @@ function getNextDifferent(objArray, targetObj, startFrom, ...comparisonFields) {
     let start = startFrom,
           end = objArray.length - 1;
 
+    
+    if (start >= objArray.length) { // throw error if startFrom is outside the bounds of the array.
+        throw new Error('startFrom is outside the bounds of the array.');
+    }
     // If target object is to the right of objArray[start], then throw an error..
-    if (objCompare(targetObj, objArray[start], ...comparisonFields) > 0) 
+    if (objCompare(targetObj, objArray[start], ...comparisonFields) > 0) {
         throw new Error('targetObj is to the right (\'greater than\') objArray[startFrom].');
+    }
          
     while (start < end) {   
         let mid = Math.trunc((start + end) / 2);
@@ -507,7 +528,7 @@ function getObjArrayWithNoDuplicates(objArray, firstOfDuplicates, ...comparisonF
         throw new Error(`firstOfDuplicates must be boolean true or false.`);
 
     const noDuplicates = [];
-    let idx;
+    let idx = 0;
     let grpStart = 0; // Start index of current duplicate group.
     while (grpStart < objArray.length - 1) {
         if (firstOfDuplicates) {
@@ -524,9 +545,17 @@ function getObjArrayWithNoDuplicates(objArray, firstOfDuplicates, ...comparisonF
         }
         idx = grpStart;
     }
-
-    if (objCompare(objArray[idx], noDuplicates[noDuplicates.length - 1], ...comparisonFields) !== 0)
-        noDuplicates.push(objArray[idx]); // Add the last object.
+    if (noDuplicates.length === 0) { // All objects are duplicates.
+        if (firstOfDuplicates)
+            noDuplicates.push(objArray[0]);
+        else
+            noDuplicates.push(objArray[objArray.length - 1]);
+    }
+    else {
+        if (objCompare(noDuplicates[noDuplicates.length - 1], objArray[objArray.length - 1], ...comparisonFields) !== 0) {
+            noDuplicates.push(objArray[objArray.length - 1]);
+        }
+    }
 
     return noDuplicates;
 } // function getObjArrayWithNoDuplicates(objArray, ...comparisonFields) {
