@@ -8,6 +8,10 @@
  *                            Added function getNextDifferent() to deal better with duplicate removal from arrays of objects.
  * 2026/01/02  ITA   1.04     Improved the functions getNoDuplicatesArray() and getNextDifferent() to handle more test cases.
  *                            Added function unset().
+ * 2025/10/28  ITA   1.05     Improved documentation of functions to show better on the tooltip in IDEs.
+ *                            Improved deepClone() function to handle Date objects and arrays.
+ *                            Updated get() function to return undefined or supplied default value for paths that do not exist.
+ *                            Updated test.js file accordingly.
 */
 
 /**Return true if userName is valid
@@ -140,9 +144,11 @@ function timeStampString(dateObj) {
 module.exports.timeStampString = timeStampString;
 
 
-/** Return a numeric string with trailing zeros.
- * E.g. addLeadingZeros(9, 3) = '009'
- * Inputs: 
+/** Returns a numeric string with trailing zeros.
+ * 
+ * E.g.
+ * 
+ * addLeadingZeros(9, 4) = '0009', addLeadingZeros(123, 5) = '00123'
  * @param {Number} aNumber an integer or integer string.
  * @param {Number} newLength the new length of the resulting string.
  * @returns a string of a number with the specified number of leading zeros.
@@ -170,13 +176,50 @@ module.exports.toZarCurrencyFormat = toZarCurrencyFormat;
 
 /**Return a deep clone of a document object.
  * By using deep cloning, you create a new object that is entirely separate from the original original.
+ * 
  * So that whatever you do to that clone, such as deletion of fields, does not affect the original.
- * NB. Class instance types will be converted to plain object types due to stringification.
+ * 
+ * NB. Works only plain Javascript objects. Field types supported: Date, number, string, boolean, and object/array of such types.
  * @param {object} obj a plain Javascript object.
  * @returns a Javascript object that is separate from the original object.
  */
 function deepClone(obj) {
-    return JSON.parse(JSON.stringify(obj));
+    if (Object.prototype.toString.call(obj) === '[object Object]') {
+        // continue to the next steps.
+    }
+    else if (obj instanceof Date) { // Date instance
+        return new Date(obj);
+    }
+    else if (Array.isArray(obj)) { // array
+        return obj.map(item=> deepClone(item));
+    }
+    else if (['string', 'number', 'boolean'].includes(typeof obj)) { // primitive type
+        return obj;
+    }
+    else {
+        return obj; // other types such as null, undefined, etc.
+    }
+    const tempObj = {};
+    for (const path in obj) {
+        const value = obj[path];
+        if (Object.prototype.toString.call(value) === '[object Object]') {
+            tempObj[path] = deepClone(value);
+        }
+        else if (value instanceof Date) { // Date instance
+            tempObj[path] = new Date(value);
+        }
+        else if (Array.isArray(value)) { // array
+            tempObj[path] = value.map(item=> deepClone(item));
+        }
+        else if (['string', 'number', 'boolean'].includes(typeof value)) { // primitive type
+            tempObj[path] = value;
+        }
+        else {
+            tempObj[path] = value; // other types such as null, undefined, etc.
+        }
+    } // for (idx in paths) {
+    
+    return tempObj; // return the deep cloned object.
 } // function deepClone(obj) { // Return a deep clone of an object.
 module.exports.deepClone = deepClone;
 
@@ -201,64 +244,59 @@ function getPaths(anObject) {
         else
             paths.push(path);
     }
-    paths.sort();
     return paths;
 } // function getPaths()
 module.exports.getPaths = getPaths;
 
 /** Return an object with sorted fields,  ordered by field name ascending.
- * This is desirable when equality comparison is done to ensure two objects sharing equal field values
- * the pass the equality test stringify(object1) === stringify(object2)
+ * 
+ * NB. For comparison of objects, please see objCompare() function.
  * @param {object} pObject 
  * @returns {object} an object with fields sorted in ascending order of field names.
 */
 function getSortedObject(pObject) {
-  const objClone = deepClone(pObject);
-  const paths = [];
-  const sortedObject = {};
+    const objClone = deepClone(pObject);
+    const paths = [];
+    const sortedObject = {};
 
-  // Obtain the outermost fields and sort them.
-  for (let field in objClone) {
-    paths.push(field);
-  }
-  paths.sort();
-
-  // Assign the sorted fields to the new object.
-  for (let index in paths) {
-    const field = paths[index];
-    if (Object.prototype.toString.call(objClone[field]) === '[object Object]') {
-        sortedObject[field] = getSortedObject(objClone[field]);
+    // Obtain the outermost fields and sort them.
+    for (let field in objClone) {
+        paths.push(field);
     }
-    else {
-        sortedObject[field] = objClone[field];
-    } //
-  } // for (let field in paths) {
+    paths.sort();
 
-  return sortedObject;
+    // Assign the sorted fields to the new object.
+    for (let index in paths) {
+        const field = paths[index];
+        if (Object.prototype.toString.call(objClone[field]) === '[object Object]') {
+            sortedObject[field] = getSortedObject(objClone[field]);
+        }
+        else {
+            sortedObject[field] = objClone[field];
+        } //
+    } // for (let field in paths) {
+
+    return sortedObject;
 } // function getSortedObject(pObject) {
 module.exports.getSortedObject = getSortedObject;
 
 /** Get the value of a field specified by the path from an object.
  * @param {object} anObject a Javascript object.
  * @param {string} path a path specifying the field whose value is to be obtained.
- * @returns {*} the value of the field specified by the path.
+ * @param {*} [defaultVal=undefined] a default value to return if the path does not exist on the object.
+ * @returns {*} the value of the field specified by the path, otherwise a default value if supplied.
  */
-function get(anObject, path) {
+function get(anObject, path, defaultVal = undefined) {
     if (getPaths(anObject).includes(path) === false) {
-        console.log(hasAll(anObject, path), path, anObject, getPaths(anObject));
-        throw new Error(`Path ${path} does not exist on the object.`);
+        return defaultVal;
     }
     let paths = path.split('.');
-    let currentObj = deepClone(anObject);
-
-    let value = currentObj[paths[0]];
+    let value = anObject[paths[0]];
     if (paths.length > 1) {
         paths.splice(0, 1);
         return get(value,  paths.join('.'));
     }
-    else {
-        return value;
-    }
+    return deepClone(value);
 }
 module.exports.get = get;
 
@@ -363,16 +401,18 @@ function hasOnlyAll(anObject, ...fields) {
 module.exports.hasOnlyAll = hasOnlyAll;
 
 /**Binary Search the sorted primitive data array for a value and return the index.
+ * 
  * ArraySortDir specifies the direction in which the array is sorted (desc or asc).
+ * 
  * If the array contains the value searched for, then the index returned is the location of this value on the array,
  * otherwise, the index is of closest value in the array that is before or after the search value in terms of sort order.
- * Return -1 for an empty array.
- * This function is to be used also in cases where values are to be inserted into the array while maintaining sort order.
+ * 
+ * This function can be used also in cases where values are to be inserted into the array while maintaining sort order.
  * @param {Array} anArray an array of primitve type. All element must be the same type.
  * @param {*} searchVal search value
  * @param {number} [startFrom=0] index from which to start. Default: 0.
  * @param {string} [arraySortDir='asc'] sort direction. Must be 'asc' or 'desc'. Default: 'asc'
- * @returns {number} an index
+ * @returns {number} an index. -1 mean value not found.
  */
 function binarySearch(anArray, searchVal, startFrom = 0, arraySortDir = 'asc') {
 
@@ -407,13 +447,16 @@ function binarySearch(anArray, searchVal, startFrom = 0, arraySortDir = 'asc') {
 module.exports.binarySearch = binarySearch;
 
 /** Compare two values of the same primitive type, according to the sort direction.
+ * 
  * A return value of -1 means that value1 is before value2 in terms of sort order.
+ * 
  * A return value of 1 means that value1 is after value2 in terms of sort order.
+ * 
  * A return value of 0 means that value1 is equal to value2.
  * @param {*} value1
  * @param {*} value2
  * @param {string} [sortDir='asc'] 
- * @returns {number} integer (-1, 0 or 1)
+ * @returns {number}  -1, 0 or 1
 */
 function compare(value1, value2, sortDir = 'asc') {
     if (!['asc', 'desc'].includes(sortDir))
@@ -430,16 +473,19 @@ function compare(value1, value2, sortDir = 'asc') {
 module.exports.compare = compare;
 
 /**Binary Search the sorted (ascending or descending order) array of objects for a value and return the index.
+ * 
  * The assumption is that the array is sorted in order of 1 or more sort fields,
- * for example'lastName asc', 'firstName', 'address.province asc', 'address.townOrCity asc'.
- * If the array contains the object with values searched for, then the index returned is the location of this value in the array,
- * otherwise, the index is of the closest value in the array that is before or after the searchObj value.
+ * 
+ * Examples of sort fields: 'lastName asc', 'firstName', 'address.province asc', 'address.townOrCity asc'.
+ * 
+ * If the array contains the object with values searched for, then the index returned is the location of this value in the array, otherwise,
+ * the index is of the closest value in the array that is before or after the searchObj value.
  * Return -1 for an empty array.
  * Assumed field data types are Number, String and Date.
  * This function is to be used also in cases where objects are to be inserted into the array while maintaining sort order.
  * @param {Array<object} objArray an array of Javascript objects.
  * @param {object} searchObj an object to search for.
- * @@param {number} [startFrom=0] index from which to start searching.
+ * @param {number} [startFrom=0] index from which to start searching.
  * @param {...string} sortFields one or more search fields.
  * @returns {number} an index.
  */
@@ -475,7 +521,7 @@ module.exports.binarySearchObj = binarySearchObj;
  * @param {Array<object>} objArray an array of objects
  * @param {object} targetObj target object
  * @param {number} startFrom index from which to start searching
- * @param {...string} comparisonFields comparison fields plus sort order.
+ * @param {...string} comparisonFields the fields sort order of the array. e.g. 'score desc', 'numGames asc'.
  * @returns index of the next different object.
  */
 function getNextDifferent(objArray, targetObj, startFrom, ...comparisonFields) {
@@ -507,9 +553,13 @@ function getNextDifferent(objArray, targetObj, startFrom, ...comparisonFields) {
 module.exports.getNextDifferent = getNextDifferent;
 
 /**Create an array with duplicates eliminated, according to certain fields. Taking only the first or last object from each duplicate set.
+ * 
  * If firstOfDuplicates === true, then the first element in each set of duplicates is taken.
+ * 
  * if firstOfDuplicates === false, then the last element is taken from each set of duplicates.
- * Assumed field data types are Number, String and Date.
+ * 
+ * Assumed comparison field data types are Boolean, Number, String, Date.
+ * 
  * The array must be sorted according to the comparison fields before calling this function.
  * The value of the comparison field must include both the field name and sort direction.
  * Sort direction assumed to be "asc" if not provided.
@@ -561,14 +611,21 @@ function getObjArrayWithNoDuplicates(objArray, firstOfDuplicates, ...comparisonF
 } // function getObjArrayWithNoDuplicates(objArray, ...comparisonFields) {
 module.exports.getObjArrayWithNoDuplicates = getObjArrayWithNoDuplicates;
 
-/**Compare 2 objects according to the comparison fields specified in the comparison fields, and return the result.
- * Each each of the comparisonFields must be of the form 'fieldName sortDirection' or 'fieldName'. 
+/**Compare 2 objects according to the comparison fields, and return the result of:
+ * 
+ * -1 if obj1 is before obj2, 1 if obj1 is after obj2, 0 if obj1 is equal to obj2.
+ * 
+ * Each each of the comparisonFields must be of the form 'fieldName sortDirection' or 'fieldName'.
+ *  
  * Sort directions: 'asc', 'desc'.
- * Examples: 'lastName desc', 'firstName', 'firstName asc', 'address.provinceName asc'.
+ * 
+ * Field/sort-direction examples: 'lastName desc', 'firstName', 'firstName asc', 'address.provinceName asc'.
+ * 
  * If sort direction is not provided, then it is assumed to be ascending.
  * @param {object} obj1 first object to compare
  * @param {object} obj2 second object to compare
- * @returns {number} a comparison value of 1, 0 or -1
+ * @param  {...string} comparisonFields one or more comparison fields plus sort order.
+ * @returns {number} comparison result: -1, 0 or 1.
 */
 function objCompare(obj1, obj2, ...comparisonFields) {
     if (comparisonFields.length === 0)

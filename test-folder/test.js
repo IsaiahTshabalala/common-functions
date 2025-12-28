@@ -6,9 +6,10 @@ Date        Version  Description
 2025/11/20  1.0.2    Corrected test code.
 2025/12/26  1.0.3    Added further tests for the getArrayWithNoDuplicates() function.
                      Added tests for get() and unset() functions.
+2025/12/28  1.0.4    Added tests for updated deepClone() function.
 */
 const commonFunctions = require('some-common-functions-js');
-const { set, get, unset } = commonFunctions;
+const { set, get, unset, deepClone } = commonFunctions;
 /**Note to the developer: LOCAL TESTING INSTRUCTIONS:
  * To "publish" your package locally, run "npm link" from the root folder of this project,
  * then run "npm link some-common-functions-js" from test-folder.
@@ -52,6 +53,13 @@ console.log(commonFunctions.objCompare(anObject, anObject2, "lastName", "firstNa
 console.log(commonFunctions.objCompare(anObject, anObject2, "address.country.name", "address.city", "address.mainPlace")); // 1 because "Johannesburg" is after "Vereeniging" according to descending order.
 console.log("----END OF objCompare test----");
 
+let deepClonedObject = deepClone(anObject);
+let isEqual = (commonFunctions.objCompare(anObject, deepClonedObject,"firstName", "lastName",
+                                        "address.houseNum", "address.streetName",
+                                        "address.city", "address.country.name",
+                                        "address.country.code", "caseNums") === 0);
+console.log(isEqual);
+console.log("----END OF deepClone test----");
 
 let anObject3 = {
     firstName: "Huang",
@@ -134,11 +142,12 @@ console.log(commonFunctions.hasOnlyAll(anObject, "firstName", "lastName", "addre
                                     // false, because anObject has address.mainPlace and address.subPlace which are extra to the specified fields.
 
 console.log("----END OF hasOnlyAll test----");    
+console.log(anObject);
 
 console.log(commonFunctions.getSortedObject(anObject));
 
 console.log("----END OF getSortedObject test----");    
-
+return;
 
 let myArray = [100, 101, 102, 103, 104, 105, 106, 107];  
 console.log(commonFunctions.binarySearch(myArray, 103, 4)); // 4
