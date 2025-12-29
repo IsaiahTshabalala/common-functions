@@ -56,3 +56,6 @@ Added the outstanding change log for the previous version.
 ## Version 1.1.5 - 2025/12/28 - ITA
 - Improved the documentation of functions to show better on the tooltip in IDEs.
 - Improved the deepClone function to handle Date and array types that may have dates types better.
+
+## Version 1.1.6 - 2025/12//29 - ITA
+Removed unnecessary use of the getPaths() function in the get() function to improve effieciency.

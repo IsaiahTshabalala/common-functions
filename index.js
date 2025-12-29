@@ -12,6 +12,7 @@
  *                            Improved deepClone() function to handle Date objects and arrays.
  *                            Updated get() function to return undefined or supplied default value for paths that do not exist.
  *                            Updated test.js file accordingly.
+ * 2025/12//29 ITA   1.06     Removed unnecessary use of the getPaths() function in the get() function to improve effieciency.
 */
 
 /**Return true if userName is valid
@@ -287,11 +288,11 @@ module.exports.getSortedObject = getSortedObject;
  * @returns {*} the value of the field specified by the path, otherwise a default value if supplied.
  */
 function get(anObject, path, defaultVal = undefined) {
-    if (getPaths(anObject).includes(path) === false) {
-        return defaultVal;
-    }
     let paths = path.split('.');
     let value = anObject[paths[0]];
+    if (value === undefined) {
+        return defaultVal;
+    }
     if (paths.length > 1) {
         paths.splice(0, 1);
         return get(value,  paths.join('.'));
@@ -328,8 +329,10 @@ module.exports.set = set;
  */
 function unset(anObject, path) {
     let paths = path.split('.');
+    const subObject = anObject[paths[0]];
+    if (subObject === undefined)
+        return; // field not found.
     if (paths.length > 1) {
-        const subObject = anObject[paths[0]];
         paths.splice(0, 1);
         unset(subObject, paths.join('.'));
     }
