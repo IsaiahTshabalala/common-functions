@@ -147,7 +147,6 @@ console.log(anObject);
 console.log(commonFunctions.getSortedObject(anObject));
 
 console.log("----END OF getSortedObject test----");    
-return;
 
 let myArray = [100, 101, 102, 103, 104, 105, 106, 107];  
 console.log(commonFunctions.binarySearch(myArray, 103, 4)); // 4
