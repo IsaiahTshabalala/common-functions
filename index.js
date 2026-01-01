@@ -4,15 +4,16 @@
  * 2025/11/19  ITA   1.00     Genesis.
  * 2025/11/28  ITA   1.01     Added function hasOnlyAll().
  * 2025/12/22  ITA   1.02     Improved documentation of the functions and moved in more functions.
- * 2025/12/30  ITA   1.03     Removed lodash dependency by re-implementing get() and set() object functions, significantly reducing this package size.
+ * 2025/12/26  ITA   1.03     Removed lodash dependency by re-implementing get() and set() object functions, significantly reducing this package size.
  *                            Added function getNextDifferent() to deal better with duplicate removal from arrays of objects.
- * 2026/01/02  ITA   1.04     Improved the functions getNoDuplicatesArray() and getNextDifferent() to handle more test cases.
+ * 2025/12/27  ITA   1.04     Improved the functions getNoDuplicatesArray() and getNextDifferent() to handle more test cases.
  *                            Added function unset().
- * 2025/10/28  ITA   1.05     Improved documentation of functions to show better on the tooltip in IDEs.
+ * 2025/12/28  ITA   1.05     Improved documentation of functions to show better on the tooltip in IDEs.
  *                            Improved deepClone() function to handle Date objects and arrays.
  *                            Updated get() function to return undefined or supplied default value for paths that do not exist.
  *                            Updated test.js file accordingly.
- * 2025/12//29 ITA   1.06     Removed unnecessary use of the getPaths() function in the get() function to improve effieciency.
+ * 2025/12/29 ITA   1.06      Removed unnecessary use of the getPaths() function in the get() function to improve effieciency.
+ * 2026/01/01 ITA   1.07      Changed recursive functions to iterative functions, so as to overcome stack limits when functions are used in the front-end (browsers).
 */
 
 /**Return true if userName is valid
@@ -180,7 +181,7 @@ module.exports.toZarCurrencyFormat = toZarCurrencyFormat;
  * 
  * So that whatever you do to that clone, such as deletion of fields, does not affect the original.
  * 
- * NB. Works only plain Javascript objects. Field types supported: Date, number, string, boolean, and object/array of such types.
+ * NB. Works only plain Javascript objects. Field types supported: Date, number, string and boolean types.
  * @param {object} obj a plain Javascript object.
  * @returns a Javascript object that is separate from the original object.
  */
@@ -191,39 +192,30 @@ function deepClone(obj) {
     else if (obj instanceof Date) { // Date instance
         return new Date(obj);
     }
-    else if (Array.isArray(obj)) { // array
-        return obj.map(item=> deepClone(item));
-    }
     else if (['string', 'number', 'boolean'].includes(typeof obj)) { // primitive type
         return obj;
     }
     else {
-        return obj; // other types such as null, undefined, etc.
+        return obj; // other types such as null, undefined, array, etc.
     }
-    const tempObj = {};
-    for (const path in obj) {
-        const value = obj[path];
-        if (Object.prototype.toString.call(value) === '[object Object]') {
-            tempObj[path] = deepClone(value);
+    const stack = [{...obj}];
+    let idx = 0;
+
+    while (idx < stack.length) {
+        let element = stack[idx];
+        if (Object.prototype.toString.call(element) === '[object Object]') {
+            for (let key in element) {
+                if (element[key] instanceof Date) { // Date instance
+                    element[key] = new Date(element[key]);
+                }
+                stack.push(element[key]);
+            }
         }
-        else if (value instanceof Date) { // Date instance
-            tempObj[path] = new Date(value);
-        }
-        else if (Array.isArray(value)) { // array
-            tempObj[path] = value.map(item=> deepClone(item));
-        }
-        else if (['string', 'number', 'boolean'].includes(typeof value)) { // primitive type
-            tempObj[path] = value;
-        }
-        else {
-            tempObj[path] = value; // other types such as null, undefined, etc.
-        }
-    } // for (idx in paths) {
-    
-    return tempObj; // return the deep cloned object.
+        idx++;
+    }
+    return stack[0];
 } // function deepClone(obj) { // Return a deep clone of an object.
 module.exports.deepClone = deepClone;
-
 
 /**
  * Get the paths (fields) of the plain Javascript object.
@@ -231,23 +223,29 @@ module.exports.deepClone = deepClone;
  * @returns a sorted string array of paths.
  */
 function getPaths(anObject) {
-    const paths = [];
-    if (!(Object.prototype.toString.call(anObject) === '[object Object]'))
-        return paths;
-    
-    for (const path in anObject) {
-        const nestedPaths = getPaths(anObject[path]);
-        if (nestedPaths.length > 0) {
-            nestedPaths.forEach(nestedPath=> {
-                paths.push(path + '.' + nestedPath); 
-            });
+    // This is where sub-objects are to be stacked, during traversal through the object.
+    const stack = [{ value: anObject}];    
+    let idx = 0;
+
+    while (idx < stack.length) {
+        const element = stack[idx];
+        if (Object.prototype.toString.call(element.value) === "[object Object]") {
+            for (const key in element.value) {
+                let path = element.path? element.path + "." + key : key;
+                stack.push(
+                    { value: element.value[key], path }
+                );
+            }
+            element.remove = true; /* This has an incomplete path, and will be removed later */
         }
-        else
-            paths.push(path);
+        idx++;
     }
-    return paths;
+    return stack
+            .filter(element => !(element.remove))
+            .map(element => element.path);
 } // function getPaths()
 module.exports.getPaths = getPaths;
+
 
 /** Return an object with sorted fields,  ordered by field name ascending.
  * 
@@ -289,15 +287,14 @@ module.exports.getSortedObject = getSortedObject;
  */
 function get(anObject, path, defaultVal = undefined) {
     let paths = path.split('.');
-    let value = anObject[paths[0]];
-    if (value === undefined) {
-        return defaultVal;
+    let tempObj = anObject;
+    for (let idx in paths) {
+        let key = paths[idx];
+        tempObj = tempObj[key];
+        if (!tempObj) // undefined or null
+            return defaultVal;
     }
-    if (paths.length > 1) {
-        paths.splice(0, 1);
-        return get(value,  paths.join('.'));
-    }
-    return deepClone(value);
+    return tempObj;
 }
 module.exports.get = get;
 
@@ -307,17 +304,18 @@ module.exports.get = get;
  * @param {*} value the value to set.
  */
 function set(anObject, path, value) {
+    let tempObj = anObject;
     let paths = path.split('.');
-    if (paths.length > 1) {
-        if (!anObject[paths[0]]) {
-            anObject[paths[0]] = {};
+    for (let idx in paths) {
+        let key = paths[idx];
+        if (idx < paths.length - 1) {
+            if (!(key in tempObj))
+                tempObj[key] = {};        
+            
+            tempObj = tempObj[key];
         }
-        const subObject = anObject[paths[0]];
-        paths.splice(0, 1);
-        set(subObject, paths.join('.'), value);
-    }
-    else {
-        anObject[paths[0]] = value;
+        else
+            tempObj[key] = value;
     }
 }
 module.exports.set = set;
@@ -329,15 +327,15 @@ module.exports.set = set;
  */
 function unset(anObject, path) {
     let paths = path.split('.');
-    const subObject = anObject[paths[0]];
-    if (subObject === undefined)
-        return; // field not found.
-    if (paths.length > 1) {
-        paths.splice(0, 1);
-        unset(subObject, paths.join('.'));
-    }
-    else {
-        delete anObject[paths[0]];
+    let tempObj = anObject;
+    for (let idx in paths) {
+        let key = paths[idx];
+        if (!tempObj)
+            return;
+        if (idx < paths.length - 1)
+            tempObj = tempObj[key];
+        else
+            delete tempObj[key];
     }
 }
 module.exports.unset = unset;
