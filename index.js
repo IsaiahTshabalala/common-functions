@@ -14,6 +14,7 @@
  *                            Updated test.js file accordingly.
  * 2025/12/29 ITA   1.06      Removed unnecessary use of the getPaths() function in the get() function to improve effieciency.
  * 2026/01/01 ITA   1.07      Changed recursive functions to iterative functions, so as to overcome stack limits when functions are used in the front-end (browsers).
+ * 2025/01/01 ITA   1.08      Changed an additional recursive function to an iterative function.
 */
 
 /**Return true if userName is valid
@@ -249,33 +250,24 @@ module.exports.getPaths = getPaths;
 
 /** Return an object with sorted fields,  ordered by field name ascending.
  * 
+ * The returned object is independent of the source object.
+ * 
  * NB. For comparison of objects, please see objCompare() function.
  * @param {object} pObject 
  * @returns {object} an object with fields sorted in ascending order of field names.
 */
 function getSortedObject(pObject) {
-    const objClone = deepClone(pObject);
-    const paths = [];
-    const sortedObject = {};
+    let cloneObj = deepClone(pObject);
+    let idx = 0;
+    const paths = getPaths(cloneObj).toSorted();
+    sortedObj = {};
 
-    // Obtain the outermost fields and sort them.
-    for (let field in objClone) {
-        paths.push(field);
+    for (idx in paths) {
+        const path = paths[idx];
+        const value = get(cloneObj, path);
+        set(sortedObj, path, value);
     }
-    paths.sort();
-
-    // Assign the sorted fields to the new object.
-    for (let index in paths) {
-        const field = paths[index];
-        if (Object.prototype.toString.call(objClone[field]) === '[object Object]') {
-            sortedObject[field] = getSortedObject(objClone[field]);
-        }
-        else {
-            sortedObject[field] = objClone[field];
-        } //
-    } // for (let field in paths) {
-
-    return sortedObject;
+    return sortedObj;    
 } // function getSortedObject(pObject) {
 module.exports.getSortedObject = getSortedObject;
 

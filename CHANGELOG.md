@@ -62,3 +62,6 @@ Removed unnecessary use of the getPaths() function in the get() function to impr
 
 ## Version 1.1.7 - 2026/01//01 - ITA
 Changed recursive functions to iterative functions, in order to overcome stack limits imposed by the front-end (browsers).
+
+## Version 1.1.8 - 2026/01//01 - ITA
+Changed an additional recursive function to an iterative function.  
