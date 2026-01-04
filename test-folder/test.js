@@ -59,6 +59,7 @@ let isEqual = (commonFunctions.objCompare(anObject, deepClonedObject,"firstName"
                                         "address.city", "address.country.name",
                                         "address.country.code", "caseNums") === 0);
 console.log(isEqual);
+
 console.log("----END OF deepClone test----");
 
 let anObject3 = {

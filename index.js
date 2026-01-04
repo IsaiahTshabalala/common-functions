@@ -14,7 +14,10 @@
  *                            Updated test.js file accordingly.
  * 2025/12/29 ITA   1.06      Removed unnecessary use of the getPaths() function in the get() function to improve effieciency.
  * 2026/01/01 ITA   1.07      Changed recursive functions to iterative functions, so as to overcome stack limits when functions are used in the front-end (browsers).
- * 2025/01/01 ITA   1.08      Changed an additional recursive function to an iterative function.
+ * 2026/01/01 ITA   1.08      Changed an additional recursive function to an iterative function.
+ * 2026/01/03 ITA   1.09      deepClone(): Used object spread to prevent reference sharing during object assignment.
+ *                            unset(): Replaced falsy-value evaluation with the `in` operator to correctly detect existing fields.
+
 */
 
 /**Return true if userName is valid
@@ -209,6 +212,9 @@ function deepClone(obj) {
                 if (element[key] instanceof Date) { // Date instance
                     element[key] = new Date(element[key]);
                 }
+                else if (Object.prototype.toString.call(element[key]) === '[object Object]') {
+                    element[key] = {...element[key]}; // This helps to remove reference to the original object.
+                }
                 stack.push(element[key]);
             }
         }
@@ -282,9 +288,10 @@ function get(anObject, path, defaultVal = undefined) {
     let tempObj = anObject;
     for (let idx in paths) {
         let key = paths[idx];
-        tempObj = tempObj[key];
-        if (!tempObj) // undefined or null
+        if (!(key in tempObj)) // key not found.
             return defaultVal;
+
+        tempObj = tempObj[key];
     }
     return tempObj;
 }
@@ -322,7 +329,7 @@ function unset(anObject, path) {
     let tempObj = anObject;
     for (let idx in paths) {
         let key = paths[idx];
-        if (!tempObj)
+        if (!(key in tempObj))
             return;
         if (idx < paths.length - 1)
             tempObj = tempObj[key];
