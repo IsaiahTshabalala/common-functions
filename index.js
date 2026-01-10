@@ -1,24 +1,25 @@
 /** File: ./backend/utilityFunctions/commonFunctions.js
  * Description: Common functions to be put here.
- * Date        Dev   Version  Description
- * 2025/11/19  ITA   1.00     Genesis.
- * 2025/11/28  ITA   1.01     Added function hasOnlyAll().
- * 2025/12/22  ITA   1.02     Improved documentation of the functions and moved in more functions.
- * 2025/12/26  ITA   1.03     Removed lodash dependency by re-implementing get() and set() object functions, significantly reducing this package size.
- *                            Added function getNextDifferent() to deal better with duplicate removal from arrays of objects.
- * 2025/12/27  ITA   1.04     Improved the functions getNoDuplicatesArray() and getNextDifferent() to handle more test cases.
- *                            Added function unset().
- * 2025/12/28  ITA   1.05     Improved documentation of functions to show better on the tooltip in IDEs.
- *                            Improved deepClone() function to handle Date objects and arrays.
- *                            Updated get() function to return undefined or supplied default value for paths that do not exist.
- *                            Updated test.js file accordingly.
- * 2025/12/29 ITA   1.06      Removed unnecessary use of the getPaths() function in the get() function to improve effieciency.
- * 2026/01/01 ITA   1.07      Changed recursive functions to iterative functions, so as to overcome stack limits when functions are used in the front-end (browsers).
- * 2026/01/01 ITA   1.08      Changed an additional recursive function to an iterative function.
- * 2026/01/03 ITA   1.09      deepClone(): Used object spread to prevent reference sharing during object assignment.
- *                            unset(): Replaced falsy-value evaluation with the `in` operator to correctly detect existing fields.
- * 2026/01/04 ITA   1.10      get() and unset() functions: For field existence check, replaced the use of 'in' operator with checking whether the field value of the object is undefined.
- *                            This prevents crashes resulting from using 'in' operator on undefined fields and objects.
+ * Start Date  End Date        Dev   Version  Description
+ * 2025/11/19                  ITA   1.00     Genesis.
+ * 2025/11/28                  ITA   1.01     Added function hasOnlyAll().
+ * 2025/12/22                  ITA   1.02     Improved documentation of the functions and moved in more functions.
+ * 2025/12/26                  ITA   1.03     Removed lodash dependency by re-implementing get() and set() object functions, significantly reducing this package size.
+ *                                            Added function getNextDifferent() to deal better with duplicate removal from arrays of objects.
+ * 2025/12/27                  ITA   1.04     Improved the functions getNoDuplicatesArray() and getNextDifferent() to handle more test cases.
+ *                                            Added function unset().
+ * 2025/12/28                  ITA   1.05     Improved documentation of functions to show better on the tooltip in IDEs.
+ *                                            Improved deepClone() function to handle Date objects and arrays.
+ *                                            Updated get() function to return undefined or supplied default value for paths that do not exist.
+ *                                            Updated test.js file accordingly.
+ * 2025/12/29                 ITA   1.06      Removed unnecessary use of the getPaths() function in the get() function to improve effieciency.
+ * 2026/01/01                 ITA   1.07      Changed recursive functions to iterative functions, so as to overcome stack limits when functions are used in the front-end (browsers).
+ * 2026/01/01                 ITA   1.08      Changed an additional recursive function to an iterative function.
+ * 2026/01/03                 ITA   1.09      deepClone(): Used object spread to prevent reference sharing during object assignment.
+ *                                            unset(): Replaced falsy-value evaluation with the `in` operator to correctly detect existing fields.
+ * 2026/01/10 2026/10/10      ITA   1.10      get() and unset() functions: For field existence check, replaced the use of 'in' operator with checking whether the field value of the object is undefined.
+ *                                            This prevents crashes resulting from using 'in' operator on undefined fields and objects.
+ * 2026/01/10 2026/10/10      ITA   1.11      Added more robustness in dealing with non-existent fields in get() and unset() functions.
 
 */
 
@@ -290,10 +291,12 @@ function get(anObject, path, defaultVal = undefined) {
     let tempObj = anObject;
     for (let idx in paths) {
         let key = paths[idx];
-        if (tempObj && tempObj[key] === undefined) // key not found.
+        if (tempObj[key] === undefined) // key not found.
             return defaultVal;
 
         tempObj = tempObj[key];
+        if (tempObj === undefined)
+            return defaultVal;        
     }
     return tempObj;
 }
@@ -331,7 +334,9 @@ function unset(anObject, path) {
     let tempObj = anObject;
     for (let idx in paths) {
         let key = paths[idx];
-        if (tempObj && tempObj[key] === undefined)
+        if (Object.prototype.toString.call(tempObj) !== '[object Object]')
+            return;
+        if (tempObj[key] === undefined)
             return;
         if (idx < paths.length - 1)
             tempObj = tempObj[key];

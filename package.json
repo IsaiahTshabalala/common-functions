@@ -1,6 +1,6 @@
 {
   "name": "some-common-functions-js",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "Common functions used with Javascript objects, and field validation functions.",
   "keywords": [
     "validation",
