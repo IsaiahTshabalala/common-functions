@@ -211,6 +211,7 @@ console.log("----END OF set test----");
 
 console.log(get(emptyObj, "address.country.name")); // "South Africa"
 console.log(get(emptyObj, "firstName")); // "Isaiah"
+console.log(get(emptyObj, "firstName.lastName")); // undefined.
 console.log("----END OF get test----");
 
 let testObj = {
@@ -218,6 +219,7 @@ let testObj = {
     lastName: 'Rambo',
     address: { country: { name: 'South Africa', code: 'ZA' } },
 }
+unset(testObj, "address.country.code");
 unset(testObj, "address.country.code");
 unset(testObj, "lastName");
 console.log(testObj);

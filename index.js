@@ -17,6 +17,8 @@
  * 2026/01/01 ITA   1.08      Changed an additional recursive function to an iterative function.
  * 2026/01/03 ITA   1.09      deepClone(): Used object spread to prevent reference sharing during object assignment.
  *                            unset(): Replaced falsy-value evaluation with the `in` operator to correctly detect existing fields.
+ * 2026/01/04 ITA   1.10      get() and unset() functions: For field existence check, replaced the use of 'in' operator with checking whether the field value of the object is undefined.
+ *                            This prevents crashes resulting from using 'in' operator on undefined fields and objects.
 
 */
 
@@ -288,7 +290,7 @@ function get(anObject, path, defaultVal = undefined) {
     let tempObj = anObject;
     for (let idx in paths) {
         let key = paths[idx];
-        if (!(key in tempObj)) // key not found.
+        if (tempObj && tempObj[key] === undefined) // key not found.
             return defaultVal;
 
         tempObj = tempObj[key];
@@ -329,7 +331,7 @@ function unset(anObject, path) {
     let tempObj = anObject;
     for (let idx in paths) {
         let key = paths[idx];
-        if (!(key in tempObj))
+        if (tempObj && tempObj[key] === undefined)
             return;
         if (idx < paths.length - 1)
             tempObj = tempObj[key];

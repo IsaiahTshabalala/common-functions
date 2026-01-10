@@ -69,3 +69,6 @@ Changed an additional recursive function to an iterative function.
 ## Version 1.1.9 - 2026/01/03 - ITA
 - During object assignment, deepClone() function uses object spread to remove references to the original object.
 - get() function replaces falsy-value evaluation (!obj) with 'in' operator for field existence checks. Because the falsy-value evaluation also evaluates to true with existent fields with values that are empty strings or null, which is not desirable.
+
+## Version 1.2.0 - 2026/01/10 - ITA
+get() and unset() functions: for field existence checks, switched from the use of 'in' operator to checking whether the field value is undefined. This prevents from crashes when a non-existent field value is encountered.
