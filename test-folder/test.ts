@@ -10,8 +10,29 @@ Date        Version  Description
 */
 import * as commonFunctions from 'some-common-functions-js';
 const { set, get, unset, deepClone } = commonFunctions;
-;
-let anObject = {
+/**Note to the developer: LOCAL TESTING INSTRUCTIONS:
+ * To "publish" your package locally, run "npm link" from the root folder of this project,
+ * then run "npm link some-common-functions-js" from test-folder.
+ * Then, run "node test.js" from test-folder to execute this test file.
+ */
+interface Person {
+    firstName: string;
+    lastName: string;
+    address: {
+        houseNum: string;
+        streetName: string;
+        mainPlace: string;
+        subPlace: string;
+        city: string;
+        country: {
+            name: string;
+            code: string;
+        };
+    };
+    caseNums?: number[];
+};
+
+let anObject: Person = {
     firstName: "Isaiah",
     lastName: "Tshabalala",
     address: {
@@ -27,7 +48,8 @@ let anObject = {
     },
     caseNums: [1001, 1002, 1003]
 };
-let anObject2 = {
+
+let anObject2: Person = {
     firstName: "Albertina",
     lastName: "Tshabalala",
     address: {
@@ -42,14 +64,21 @@ let anObject2 = {
         }
     }
 };
+
 console.log(commonFunctions.objCompare(anObject, anObject2, "lastName", "firstName")); // -1 because "Tshabalala Isaiah" is before "Tshabalala Lindiwe" according to ascending order.
 console.log(commonFunctions.objCompare(anObject, anObject2, "address.country.name", "address.city", "address.mainPlace")); // 1 because "Johannesburg" is after "Vereeniging" according to descending order.
 console.log("----END OF objCompare test----");
+
 let deepClonedObject = deepClone(anObject);
-let isEqual = (commonFunctions.objCompare(anObject, deepClonedObject, "firstName", "lastName", "address.houseNum", "address.streetName", "address.city", "address.country.name", "address.country.code", "caseNums") === 0);
+let isEqual = (commonFunctions.objCompare(anObject, deepClonedObject,"firstName", "lastName",
+                                        "address.houseNum", "address.streetName",
+                                        "address.city", "address.country.name",
+                                        "address.country.code", "caseNums") === 0);
 console.log(isEqual);
+
 console.log("----END OF deepClone test----");
-let anObject3 = {
+
+let anObject3: Person = {
     firstName: "Huang",
     lastName: "Shi",
     address: {
@@ -64,16 +93,32 @@ let anObject3 = {
         }
     }
 };
+
 // Using objCompare to sort an array of objects.
-let objArray = [anObject2, anObject, anObject3];
+let objArray: Person[] = [anObject2, anObject, anObject3];
+
 // Sort objects in objArray using multiple fields including nested fields.
-objArray.sort((obj1, obj2) => {
-    return commonFunctions.objCompare(obj1, obj2, "address.country.name", "address.city", "address.mainPlace", "address.subPlace", "lastName", "firstName");
-});
+objArray.sort((obj1, obj2)=> {
+                    return commonFunctions.objCompare(
+                                                        obj1, obj2, 
+                                                        "address.country.name",
+                                                        "address.city",
+                                                        "address.mainPlace",
+                                                        "address.subPlace",
+                                                        "lastName",
+                                                        "firstName"
+                                                    );
+                                                });
 console.log(objArray);
 console.log("----END OF objComparison sort test----");
-;
-let teams = [
+
+interface Team {
+    score: number;
+    numGames: number;
+    name?: string;
+};
+
+let teams: Team[] = [
     {
         score: 85,
         numGames: 10
@@ -93,48 +138,70 @@ let teams = [
 ];
 // Sort by score descending, then by numGames ascending.
 teams.sort((team1, team2) => {
-    return commonFunctions.objCompare(team1, team2, "score desc", "numGames asc");
+    return commonFunctions.objCompare(
+                                        team1, team2,
+                                        "score desc",
+                                        "numGames asc"
+                                    );
 });
 console.log(teams); // Expecting an array sorted such that teams with high scores and fewer games come first.
 console.log("----END OF objComparison sort test with mixed order test----");
+
 console.log(commonFunctions.getPaths(anObject));
 console.log("----END OF getPaths test----");
-console.log(commonFunctions.hasOnly(anObject, "firstName", "lastName", "address.houseNum", "address.streetName", "address.city", "address.country.name", "address.country.code"));
-// false, because because anObject has address.mainPlace and address.subPlace which are extra to the specified fields.
+
+console.log(commonFunctions.hasOnly(anObject, "firstName", "lastName", "address.houseNum",
+                                    "address.streetName", "address.city", "address.country.name", "address.country.code"));
+                                    // false, because because anObject has address.mainPlace and address.subPlace which are extra to the specified fields.
 console.log("----END OF hasOnly test----");
-console.log(commonFunctions.hasAll(anObject, "firstName", "lastName", "address.houseNum", "address.streetName", "address.city", "address.country.name", "address.country.code"));
-// true, because anObject has all the specified fields, and more (allowed)
+
+console.log(commonFunctions.hasAll(anObject, "firstName", "lastName", "address.houseNum",
+                                    "address.streetName", "address.city", "address.country.name", "address.country.code"));
+                                    // true, because anObject has all the specified fields, and more (allowed)
 console.log("----END OF hasAll test----");
-console.log(commonFunctions.hasOnlyAll(anObject, "firstName", "lastName", "address.houseNum", "address.streetName", "address.city", "address.country.name", "address.country.code"));
-// false, because anObject has address.mainPlace and address.subPlace which are extra to the specified fields.
-console.log("----END OF hasOnlyAll test----");
+
+console.log(commonFunctions.hasOnlyAll(anObject, "firstName", "lastName", "address.houseNum",
+                                    "address.streetName", "address.city", "address.country.name", "address.country.code"));
+                                    // false, because anObject has address.mainPlace and address.subPlace which are extra to the specified fields.
+
+console.log("----END OF hasOnlyAll test----");    
 console.log(anObject);
+
 console.log(commonFunctions.getSortedObject(anObject));
-console.log("----END OF getSortedObject test----");
-let myArray = [100, 101, 102, 103, 104, 105, 106, 107];
+
+console.log("----END OF getSortedObject test----");    
+
+let myArray = [100, 101, 102, 103, 104, 105, 106, 107];  
 console.log(commonFunctions.binarySearch(myArray, 103, 4)); // 4
-let result = commonFunctions.compare(103, myArray[4]); // -1, meaning sought value 103 is less than or before myArray[4].
+let result = commonFunctions.compare(103, myArray[4]!); // -1, meaning sought value 103 is less than or before myArray[4].
 console.log(result);
 console.log("----END OF binarySearch test----");
-let x = "Jiāng Fāng";
-let y = "Isaiah Tshabalala";
+
+let x = "Jiāng Fāng";  
+let y = "Isaiah Tshabalala";  
 result = commonFunctions.compare(x, y);
 console.log(result); // -1 because "Jiāng Fāng" is before "Isaiah Tshabalala" in ascending order.
 result = commonFunctions.compare(x, y, 'desc');
 console.log(result); // 1 because "Jiāng Fāng" is after "Isaiah Tshabalala" in descending order.
+
 result = commonFunctions.compare(y, x);
 console.log(result); // 1 because "Isaiah Tshabalala" is after "Jiāng Fāng" in ascending order.
 console.log("----END OF compare test----");
-let teamsArray = [
-    { score: 90, numGames: 10 },
-    { score: 90, numGames: 12 },
-    { score: 85, numGames: 8 },
-    { score: 85, numGames: 10 }
-]; // Sorted by "score desc", "numGames asc".
+
+
+let teamsArray: Team[] = [
+                    { score: 90, numGames: 10 },
+                    { score: 90, numGames: 12 },
+                    { score: 85, numGames: 8 },
+                    { score: 85, numGames: 10 }
+                ]; // Sorted by "score desc", "numGames asc".
+
 let searchObj = { score: 85, numGames: 8 };
 let anIndex = (commonFunctions.binarySearchObj(teamsArray, searchObj, 0, "score desc", "numGames asc"));
-console.log(commonFunctions.objCompare(searchObj, teamsArray[anIndex], "score desc", "numGames asc")); // 0 found
-console.log("----END OF binarySearchObj test----");
+
+console.log(commonFunctions.objCompare(searchObj, teamsArray[anIndex]!, "score desc", "numGames asc")); // 0 found
+console.log("----END OF binarySearchObj test----");  
+
 teamsArray = [
     { score: 90, numGames: 10, name: "John" },
     { score: 90, numGames: 10, name: "Jane" },
@@ -148,28 +215,33 @@ teamsArray = [
     { score: 85, numGames: 10, name: "Henry" },
     { score: 85, numGames: 10, name: "Ivy" }
 ]; // Sorted by "score desc", "numGames asc".
-let noDuplicatesArray = commonFunctions.getObjArrayWithNoDuplicates(teamsArray, true, "score desc", "numGames asc");
+
+let noDuplicatesArray = commonFunctions.getObjArrayWithNoDuplicates(teamsArray, true, "score desc", "numGames asc");  
 console.log(noDuplicatesArray); // Should contain only unique objects according to comparison fields.
 console.log("----END OF getObjArrayWithNoDuplicates test----");
+
 let nextDiffIdx = commonFunctions.getNextDifferent(teamsArray, { score: 90, numGames: 10 }, 0, "score desc", "numGames asc");
 console.log(nextDiffIdx); // 3, index of first different object after index 0.
 console.log("----END OF getNextDifferent test----");
-let emptyObj = {};
+
+let emptyObj = {}; 
 set(emptyObj, "address.country.name", "South Africa");
 set(emptyObj, "address.country.code", "ZA");
 set(emptyObj, "firstName", "Isaiah");
 set(emptyObj, "lastName", "Tshabalala");
 console.log(emptyObj);
 console.log("----END OF set test----");
+
 console.log(get(emptyObj, "address.country.name")); // "South Africa"
 console.log(get(emptyObj, "firstName")); // "Isaiah"
 console.log(get(emptyObj, "lastName")); // "Tshabalala"
 console.log("----END OF get test----");
+
 let testObj = {
     firstName: 'John',
     lastName: 'Rambo',
     address: { country: { name: 'South Africa', code: 'ZA' } },
-};
+}
 unset(testObj, "address.country.code");
 unset(testObj, "lastName");
 console.log(testObj);

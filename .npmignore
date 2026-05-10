@@ -1,2 +1,5 @@
 test-folder/
 node_modules/
+.gitignore
+index.ts
+index.d.ts.map

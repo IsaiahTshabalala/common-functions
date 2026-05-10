@@ -75,3 +75,7 @@ get() and unset() functions: for field existence checks, switched from the use o
 
 ## Version 1.2.1 - 2026/01/10 to 2026/01/10 - ITA
 Added more robustness in dealing with non-existent fields in the get() and unset() functions.
+
+## Version 2.0.0 - 2026/05/07 to 2026/05/08 - ITA
+- Migrated to Typescript.
+- Added more robustness in verifying whether variables are plain Typescript/Javascript objects or not.

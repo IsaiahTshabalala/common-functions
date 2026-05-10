@@ -1,6 +1,7 @@
-# JavaScript Object Utilities, Field Validation Functions, Array Binary Search, and Date timestamp Functions.
+# Typescript/JavaScript Object Utilities, Field Validation Functions, Array Binary Search, and Date timestamp Functions.
 
-Common functions used for working with JavaScript objects and validating field values.
+Common functions used for working with Typescript/JavaScript objects and validating field values.  
+Full support for Typescript use.
 
 ---
 ## Installation
@@ -8,17 +9,100 @@ Common functions used for working with JavaScript objects and validating field v
 npm install some-common-functions-js
 ```  
   
-## 1. JavaScript Object Utilities
+## 1. Typescript/JavaScript Object Utilities
   
 ### `deepClone(anObject)`
-Returns a deep clone of a plain Javascript object. The clone, while it has field equal to that of the original object, is separate from the original object.  
+Returns a deep clone of a plain Typescript/Javascript object. The clone, while it has field equal to that of the original object, is separate from the original object.
+NB: Cloneable fields include primitive types, strings and dates. For fields other types, e.g arrays and class instances, they must be cloned individually using other means.  
+
+***Example in Javascript***
+```
+import { deepClone } from "some-common-functions-js";
+
+const vehicle = {
+    make: "Cherry",
+    model: "SX1",
+    year: 2024,
+    type: "Coupe"
+};
+
+const vehicleClone = deepClone(vehicle); // Wholly cloned.
+
+const student = {
+    firstName: "Zack", // firstName - cloneable
+    lastName: "Zama", // lastName - cloneable
+    dateOfBirth: new Date("1990-01-01"), // dateOfBirth - cloneable
+    address: {
+        streetNum: "243", // address.streetNum - cloneable
+        streetName: "Milkwood Str.", // address.streetName - cloneable
+        subPlace: "Ext.1", // address.subPlace - cloneable
+        mainPlace: "Lakeside", // address.mainPlace - cloneable
+        municipality: "City of Johannesburg Metro", // address.municipality - cloneable
+        province: "Gauteng" // address.province - cloneable
+    },
+    subjects: ["CS-1", "CS-2", "MA-1"] // Not cloneable
+};
+const studentClone = deepClone(student); // All fields except "subjects" not cloned, because it is an array and not primitive, string or date type.
+```    
+  
+***Example in Typescript***
+```
+import { deepClone } from "some-common-functions-js";
+
+interface Vehicle {
+    make: string;
+    model: string;
+    year: number;
+    type: string;
+};
+
+const vehicle: Vehicle = {
+    make: "Cherry",
+    model: "SX1",
+    year: 2024,
+    type: "Coupe"
+};
+
+const vehicleClone = deepClone(vehicle); // Wholly cloned.
+
+interface Student {
+    firstName: string;
+    lastName: string;
+    dateOfBirth: Date;
+    address: {
+        streetNum: string;
+        streetName: string;
+        subPlace: string;
+        mainPlace: string;
+        municipality: string;
+        province: string;
+    },
+    subjects: string[];
+};
+
+const student: Student = {
+    firstName: "Zack", // firstName - cloneable
+    lastName: "Zama", // lastName - cloneable
+    dateOfBirth: new Date("1990-01-01"), // dateOfBirth - cloneable
+    address: {
+        streetNum: "243", // address.streetNum - cloneable
+        streetName: "Milkwood Str.", // address.streetName - cloneable
+        subPlace: "Ext.1", // address.subPlace - cloneable
+        mainPlace: "Lakeside", // address.mainPlace - cloneable
+        municipality: "City of Johannesburg Metro", // address.municipality - cloneable
+        province: "Gauteng" // address.province - cloneable
+    },
+    subjects: ["CS-1", "CS-2", "MA-1"] // Not cloneable
+};
+const studentClone = deepClone(student);
+```
   
 ### `getPaths(anObject)`
-Returns a string array of path/field names inside a JavaScript object.  
-  
-***Example***  
+Returns a string array of path/field names inside a Typescript/JavaScript object.  
+
+***Example in Javascript***  
 ```  
-const { getPaths } = require("some-common-functions-js");  
+import { getPaths } from "some-common-functions-js";  
 let client = {  
     name: "Jack",  
     surname: "Stober",  
@@ -37,14 +121,54 @@ let client = {
 let paths = getPaths(client);  
 // ["name", "surname", "address.streetNum", "address.streetName", "address.suburb",  
 //  "address.town", "address.country.name", "address.country.code"] 
+```    
+
+***Example in Typescript***  
 ```  
+import { getPaths } from "some-common-functions-js";  
+
+interface Client {
+    name: string;
+    surname: string;
+    address: {  
+        streetNum: string;
+        streetName: string;
+        suburb: string;
+        town: string;
+        country {  
+            name: string;
+            code: string;
+        }  
+    }  
+};
+let client: Client = {
+    name: "Jack",  
+    surname: "Stober",  
+    address: {  
+        streetNum: "57",  
+        streetName: "Tiger Drive",  
+        suburb: "Lakeside Ext.1",  
+        town: "Lakeside",  
+        country {  
+            name: "South Africa",  
+            code: "za"  
+        }  
+    }  
+};  
+
+let paths = getPaths(client);  
+// ["name", "surname", "address.streetNum", "address.streetName", "address.suburb",  
+//  "address.town", "address.country.name", "address.country.code"] 
+```  
+
   
 ### `getSortedObject(anObject)`
 Returns an object with sorted fields, ordered by field name ascending.  
   
-***Examples***  
+***Examples in Javascript***   
 ```  
-const { get } = require("common-functions-js");
+import { get } from "some-common-functions-js";  
+
 const client = {
     firstName: "Isaiah",
     lastName: "Tshabalala",
@@ -80,14 +204,67 @@ const sortedObject = getSortedObject(client);
     }
 */
 ```  
+   
+***Example in Typescript***  
+```
+interface Client {
+    name: string;
+    surname: string;
+    address: {  
+        streetNum: string;
+        streetName: string;
+        suburb: string;
+        town: string;
+        country {  
+            name: string;
+            code: string;
+        }  
+    }  
+};
+
+const client: Client = {
+    firstName: "Isaiah",
+    lastName: "Tshabalala",
+    address: {
+        houseNum: "5520",
+        streetName: "Main Road",
+        mainPlace: "Evaton",
+        subPlace: "Evaton Small Farms",
+        city: "Vereeniging",
+        country: {
+            name: "South Africa",
+            code: "ZA"
+        }
+    }
+};
+
+const sortedObject = getSortedObject(client);
+/*
+    {
+        address: {
+            city: 'Vereeniging',
+            country: {
+                code: 'ZA',
+                name: 'South Africa'
+            },
+            houseNum: '5520',
+            mainPlace: 'Evaton',
+            streetName: 'Main Road',
+            subPlace: 'Evaton Small Farms'
+        },
+        firstName: 'Isaiah',
+        lastName: 'Tshabalala'
+    }
+*/
+```
   
 ### `get(anObject, path)`
 Returns the value of an object at the specified path.  
 Can take the place of lodash get() function.
   
-***Examples***  
+***Examples in Javascript***  
 ```  
-const { get }  = require("some-common-functions-js");
+import { get }  from "some-common-functions-js";  
 const client = {
     firstName: "Isaiah",
     lastName: "Tshabalala",
@@ -111,13 +288,56 @@ result = get(client, "address.country.code");
 // "ZA"
 ```  
   
+  
+***Examples in Typescript***  
+```  
+import { get } from "some-common-functions-js";  
+
+interface Client {
+    name: string;
+    surname: string;
+    address: {  
+        streetNum: string;
+        streetName: string;
+        suburb: string;
+        town: string;
+        country {  
+            name: string;
+            code: string;
+        }  
+    }  
+};
+
+const client: Client = {
+    firstName: "Isaiah",
+    lastName: "Tshabalala",
+    address: {
+        houseNum: "5520",
+        streetName: "Main Road",
+        mainPlace: "Evaton",
+        subPlace: "Evaton Small Farms",
+        city: "Vereeniging",
+        country: {
+            name: "South Africa",
+            code: "ZA"
+        }
+    }
+};
+
+let result = get(client, "address.country"); // The result is type 'any', so must be cast to the type of that field.
+// { name: "South Africa", code: "ZA" }
+
+result = get(client, "address.country.code"); 
+// "ZA"
+```  
+  
 ### `set(anObject, path)`
 Sets the value of an object at the specified path.  
 Can take the place of lodash set() function.
   
-***Examples***   
+***Examples in Javascript***   
 ```  
-const { set } = require("some-common-functions-js");
+const { set } from "some-common-functions-js";  
 
 let emptyObj = {}; 
 set(emptyObj, "address.country.name", "South Africa");
@@ -133,14 +353,54 @@ console.log(emptyObj);
 }
 */
 ```  
+
+***Examples in Typescript***   
+``` 
+import { set } from "some-common-functions-js";  
+
+interface Client {
+    name: string;
+    surname: string;
+    address: {  
+        streetNum: string;
+        streetName: string;
+        suburb: string;
+        town: string;
+        country {  
+            name: string;
+            code: string;
+        }  
+    }  
+};
+
+const client: Client = {
+    firstName: "Isaiah",
+    lastName: "Tshabalala",
+    address: {
+        houseNum: "5520",
+        streetName: "Main Road",
+        mainPlace: "Evaton",
+        subPlace: "Evaton Small Farms",
+        city: "Vereeniging",
+        country: {
+            name: "South Africa",
+            code: "ZA"
+        }
+    }
+};
+
+set(client, "address.country.code", "zaf");
+// client.address.country.code assigned "zaf"
+```
+
   
 ### `unset(anObject, path)`  
-Remove a field from an object at the specified path.  
+Remove a field from an object at the specified path. Calls for caution when dealing with objects in Typescript: not to remove non-optional fields.
 Can take the place of lodash unset() function.  
   
 ***Example***  
 ```
-const {unset} = require("some-common-functions-js");
+import {unset} from "some-common-functions-js";  
 let testObj = {
     firstName: 'John',
     lastName: 'Rambo',
@@ -163,7 +423,7 @@ Returns `true` if the object contains **only** some or all of the specified fiel
   
 ***Examples***  
 ```  
-const { hasOnly } = require("some-common-functions-js");  
+import { hasOnly } from "some-common-functions-js";  
 
 let car = {  
     make: "Ford",  
@@ -189,7 +449,7 @@ The object may contain additional fields.
   
 ***Examples***  
 ```  
-const { hasAll } = require("some-common-functions-js");  
+import { hasAll } from "some-common-functions-js";  
 let car = {  
     make: "Ford",  
     model: "Ranger",  
@@ -209,7 +469,7 @@ Return `true` if an object contains only all the specified fields, nothing more,
   
 ***Examples***  
 ```  
-const { hasOnlyAll } = require("some-common-functions-js");  
+import { hasOnlyAll } from "some-common-functions-js";
 let car = {  
     make: "Ford",  
     model: "Ranger",  
@@ -260,7 +520,7 @@ Compares two values of the same primitive type, according to the sort direction.
 
 ***Examples***  
 ```
-const { compare } = require("some-common-functions-js");  
+import { compare } from "some-common-functions-js";
 
 let x = "Jiāng Fāng";  
 let y = "Isaiah Tshabalala";  
@@ -282,7 +542,7 @@ Binary Searches a sorted primitive type array for a value and returns the index.
 
  ***Example***  
  ```
- const { binarySearch, compare } = require("some-common-functions-js");  
+ import { binarySearch, compare } from "some-common-functions-js";
  let myArray = [100, 101, 102, 103, 104, 105, 106, 107];  
  let index = binarySearch(myArray, 103); // 3  
  let result = compare(103, myArray[index]); // 0, 103 === myArray[index].  
@@ -298,7 +558,7 @@ Compare 2 objects according to the comparison fields specified in the comparison
 
 ***Example***  
 ```
-const { objCompare } = require('some-common-functions-js');
+import { objCompare } from "some-common-functions-js";
 let anObject = {  
     firstName: "Isaiah",  
     lastName: "Tshabalala",  
@@ -459,7 +719,7 @@ Binary Search the sorted (ascending or descending order) array of objects for a 
 
 ***Example***  
 ```
-const { objCompare, binarySearchObj } = require("some-common-functions-js");
+import { objCompare, binarySearchObj } from "some-common-functions-js";
 let teamsArray = [  
     { score: 90, numGames: 10 },  
     { score: 90, numGames: 12 },  
@@ -483,7 +743,7 @@ Create an array of objects with duplicates eliminated. Taking only the first or 
   
 ***Example***  
 ```
-const { getObjArrayWithNoDuplicates } = require("some-common-functions-js");  
+import { getObjArrayWithNoDuplicates } from "some-common-functions-js";
 let teamsArray = [
     { score: 90, numGames: 10, name: "John" },
     { score: 90, numGames: 10, name: "Jane" },
@@ -524,14 +784,14 @@ console.log(noDuplicatesArray);
 ```  
   
 ### `getNextDifferent(objArray, targetObj, startFrom, ...comparisonFields)` 
-Get the index in the array of objects, of the next element that is distinct from the target object.  
+Get the index in the sorted array of objects, of the next element that is distinct from the target object.  
 Comparison fields must match the field & sort order of the object array. 
 Throw an error if the target object is greater than objArray[startFrom] in terms of sort order.
 Examples of comparison fields: "firstName", "lastName desc", "address.province asc", "address.townOrCity".  
   
 ***Example***  
 ```  
-const { getNextDifferent } = require("some-common-functions-js");
+import { getNextDifferent } from "some-common-functions-js";
 
 teamsArray = [
     { score: 90, numGames: 10, name: "John" },

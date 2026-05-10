@@ -5,3 +5,11 @@ dist/
 .DS_Store
 .vscode/
 .idea/
+index.js
+index.js.map
+index.d.ts
+index.d.ts.map
+test-folder/test.js
+test-folder/test.js.map
+test-folder/test.d.ts
+test-folder/test.d.ts.map

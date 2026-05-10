@@ -20,22 +20,20 @@
  * 2026/01/10 2026/10/10      ITA   1.10      get() and unset() functions: For field existence check, replaced the use of 'in' operator with checking whether the field value of the object is undefined.
  *                                            This prevents crashes resulting from using 'in' operator on undefined fields and objects.
  * 2026/01/10 2026/10/10      ITA   1.11      Added more robustness in dealing with non-existent fields in get() and unset() functions.
+ * 2026/05/07 2026/05/08      ITA   1.12      Migrated to Typescript.
+ *                                            Added a robust functionality for verifying whether a variable is a plain Typescript/Javacript object.
 
 */
-
 /**Return true if userName is valid
  * @param {string} userName
  * @returns {boolean} true if a userName is valid, otherwise false.
  */
-function isValidUserName(userName) {
+export function isValidUserName(userName) {
     if (!userName) // The username must be provided.
         return false;
-
     const regEx = /^[a-zA-Z][a-zA-Z0-9_-]{2,50}$/;
     return regEx.test(userName);
 }
-module.exports.isValidUserName = isValidUserName;
-
 /**Return true if a name is valid
  * @param {string} name
  * @returns {boolean} true if a name is valid, otherwise false.
@@ -43,12 +41,10 @@ module.exports.isValidUserName = isValidUserName;
 function isValidName(name) {
     if (!name) // The name must be provided.
         return false;
-
     const regEx = /^[A-Za-z' -]{2,50}$/;
     return regEx.test(name);
 }
-module.exports.isValidName = isValidName;
-
+export { isValidName };
 /**Return true if userName is valid
  * @param {string} email
  * @returns {boolean} true if an email is valid, otherwise false.
@@ -56,12 +52,10 @@ module.exports.isValidName = isValidName;
 function isValidEmail(email) {
     if (!email)
         return false;
-
     const regEx = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return regEx.test(email);
 }
-module.exports.isValidEmail = isValidEmail;
-
+export { isValidEmail };
 /**Return true if userName is valid
  * @param {string} num phone number
  * @returns {boolean} true if phone number is valid, otherwise false.
@@ -69,25 +63,21 @@ module.exports.isValidEmail = isValidEmail;
 function isValidPhoneNum(num) {
     if (!num) // The number must be provided.
         return false;
-
     const regEx = /^[0-9]{10,15}$/g;
     return regEx.test(num);
 }
-module.exports.isValidPhoneNum = isValidPhoneNum;
-
+export { isValidPhoneNum };
 /**Return true if the name of an organisation is valid
  * @param {string} name an organisation name
  * @returns {boolean} true if an organisation name is valid, otherwise false.
  */
-function isValidOrganisationName(name) {  
+function isValidOrganisationName(name) {
     if (!name) // The name must be provided.
         return false;
-
     const regEx = /^[a-zA-Z0-9.\-\(\) ]{2,}$/;
     return regEx.test(name);
 }
-module.exports.isValidOrganisationName = isValidOrganisationName;
-
+export { isValidOrganisationName };
 /**Return true if a password is valid
  * @param {string} password
  * @returns {boolean} true if a password is valid, otherwise false.
@@ -95,128 +85,120 @@ module.exports.isValidOrganisationName = isValidOrganisationName;
 function isValidPassword(password) {
     if (!password)
         return false;
-
     // Password must be at least 6 characters long
     if (password.length < 6)
         return false;
-
     // Must contain at least 1 uppercase letter
     if (/[A-Z]/.test(password) === false)
         return false;
-    
-      // Must contain at least 1 lowercase letter
+    // Must contain at least 1 lowercase letter
     if (/[a-z]/.test(password) === false)
         return false;
-    
     // Must contain at least 1 number
     if (/[0-9]/.test(password) === false)
         return false;
-
     // Must not contain white space characters
     if (/[\s]/.test(password))
         return false;
-    
     // Must contain atleast 1 symbol
     if (/[\][!"#$%&'()*+,./:;<=>?@^\\_`{|}~-]/.test(password) === false)
         return false;
-  
     return true;
 }
-module.exports.isValidPassword = isValidPassword;
-
-/** Converts the date object to a string of the form CCYY-MM-DD 
- * @param {Date} dateObj 
+export { isValidPassword };
+/** Converts the date object to a string of the form CCYY-MM-DD
+ * @param {Date} dateObj
  * @returns {string} string of the form CCYY-MM-DD
  */
 function timeStampYyyyMmDd(dateObj) {
     // Convert the date to string form yyyy-mm-dd
-    let year = dateObj.getFullYear();
-    let month = dateObj.getMonth() + 1;
+    let year = dateObj.getFullYear().toString();
+    let month = (dateObj.getMonth() + 1).toString();
     month = addLeadingZeros(month, 2);
-    let day = dateObj.getDate();
+    let day = dateObj.getDate().toString();
     day = addLeadingZeros(day, 2);
     return `${year}-${month}-${day}`;
 } // function timeStampYYYYMMDd(dateObj) { 
-module.exports.timeStampYyyyMmDd = timeStampYyyyMmDd;
-
+export { timeStampYyyyMmDd };
 /** Converts a date object to a string of the form CCYY-MM-DDThh:mm:ss.ccc, e.g. '2024-02-25T15:00:25.251'
  * @param {Date} dateObj
  * @returns {string} a string of the form CCYY-MM-DDThh:mm:ss.ccc.
  */
 function timeStampString(dateObj) {
-    let hours = addLeadingZeros(dateObj.getHours(), 2);
-    let minutes = addLeadingZeros(dateObj.getMinutes(), 2);
-    let seconds = addLeadingZeros(dateObj.getSeconds(), 2);
-    let milliSec = addLeadingZeros(dateObj.getMilliseconds(), 3);
+    let hours = addLeadingZeros(dateObj.getHours().toString(), 2);
+    let minutes = addLeadingZeros(dateObj.getMinutes().toString(), 2);
+    let seconds = addLeadingZeros(dateObj.getSeconds().toString(), 2);
+    let milliSec = addLeadingZeros(dateObj.getMilliseconds().toString(), 3);
     return `${timeStampYyyyMmDd(dateObj)}T${hours}:${minutes}:${seconds}.${milliSec}`;
 } // function timeStampString(dateObj) {
-module.exports.timeStampString = timeStampString;
-
-
+export { timeStampString };
 /** Returns a numeric string with trailing zeros.
- * 
  * E.g.
- * 
  * addLeadingZeros(9, 4) = '0009', addLeadingZeros(123, 5) = '00123'
- * @param {Number} aNumber an integer or integer string.
- * @param {Number} newLength the new length of the resulting string.
+ * @param {string | number} aNumber a numerical string or number.
+ * @param {number} newLength the new length of the resulting string.
  * @returns a string of a number with the specified number of leading zeros.
  */
 function addLeadingZeros(aNumber, newLength) {
-  
     let newString = aNumber + '';
     const howManyZeros = newLength - newString.length;
     for (let count = 1; count <= howManyZeros; count++)
         newString = '0' + newString;
-
     return newString;
 } // function addLeadingZeros(aString, newLength) {
-module.exports.addLeadingZeros = addLeadingZeros;
-
-/**Convert numeric input to ZAR currency format string. 
- * @param {Number} a number
+export { addLeadingZeros };
+/**Convert numeric input to ZAR currency format string.
+ * @param {number | string} aNumber a number or numeric string.
  * @returns a string of the form R 256,534.00
 */
-function toZarCurrencyFormat(number) {
-    const zarCurrencyFormat = new Intl.NumberFormat('en-US', {style: 'currency', currency: 'ZAR'});
-    return zarCurrencyFormat.format(number).replace(/ZAR/gi, 'R');
+function toZarCurrencyFormat(aNumber) {
+    if (typeof aNumber === 'string') {
+        aNumber = parseFloat(aNumber);
+    }
+    const zarCurrencyFormat = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'ZAR' });
+    return zarCurrencyFormat.format(aNumber).replace(/ZAR/gi, 'R');
 }
-module.exports.toZarCurrencyFormat = toZarCurrencyFormat;
-
+export { toZarCurrencyFormat };
+/**
+ * Check if a value is a plain Typescript/JavaScript object.
+ * @param {any} value
+ * @returns {boolean}
+ */
+function isPlainObject(value) {
+    if ((value === null) || (typeof value !== 'object')) { // Eliminate null, undefined and primitive types.
+        return false;
+    }
+    if (Object.prototype.toString.call(value) !== '[object Object]') { // Eliminate arrays, functions, dates, object instances and other non-plain objects.
+        return false;
+    }
+    return value.constructor === Object; // Eliminate objects created with custom constructors.
+}
+export { isPlainObject };
 /**Return a deep clone of a document object.
- * By using deep cloning, you create a new object that is entirely separate from the original original.
- * 
- * So that whatever you do to that clone, such as deletion of fields, does not affect the original.
- * 
- * NB. Works only plain Javascript objects. Field types supported: Date, number, string and boolean types.
- * @param {object} obj a plain Javascript object.
- * @returns a Javascript object that is separate from the original object.
+ * By using deep cloning, you create a new object that is entirely separate from the original object.
+ *
+ * So that whatever you do to that clone, such as deletion of fields, does not affect the original object.
+ *
+ * NB. Works only plain Javascript/Typescript objects. Field values are not cloned if they are not plain Javascript objects, but are returned as is.
+ * @template T
+ * @param {T} obj a plain Typescript/Javascript object.
+ * @returns a Typescript/Javascript object that is separate from the original object.
+ * @note For a full deep clone of Arrays, Maps, and Sets (that throws on functions), consider using the native {@link structuredClone}.
  */
 function deepClone(obj) {
-    if (Object.prototype.toString.call(obj) === '[object Object]') {
-        // continue to the next steps.
-    }
-    else if (obj instanceof Date) { // Date instance
-        return new Date(obj);
-    }
-    else if (['string', 'number', 'boolean'].includes(typeof obj)) { // primitive type
+    if (!isPlainObject(obj)) // Not a plain Javascript object, return as is.
         return obj;
-    }
-    else {
-        return obj; // other types such as null, undefined, array, etc.
-    }
-    const stack = [{...obj}];
+    const stack = [{ ...obj }];
     let idx = 0;
-
     while (idx < stack.length) {
         let element = stack[idx];
-        if (Object.prototype.toString.call(element) === '[object Object]') {
+        if (isPlainObject(element)) {
             for (let key in element) {
                 if (element[key] instanceof Date) { // Date instance
                     element[key] = new Date(element[key]);
                 }
-                else if (Object.prototype.toString.call(element[key]) === '[object Object]') {
-                    element[key] = {...element[key]}; // This helps to remove reference to the original object.
+                else if (isPlainObject(element[key])) { // Plain object instance
+                    element[key] = { ...element[key] }; // This helps to remove reference to the original object.
                 }
                 stack.push(element[key]);
             }
@@ -225,118 +207,124 @@ function deepClone(obj) {
     }
     return stack[0];
 } // function deepClone(obj) { // Return a deep clone of an object.
-module.exports.deepClone = deepClone;
-
+export { deepClone };
 /**
  * Get the paths (fields) of the plain Javascript object.
- * @param {object} anObject  a plain Javascript object.
+ * @template T
+ * @param {T} anObject  a plain Typescript/Javascript object.
  * @returns a sorted string array of paths.
  */
 function getPaths(anObject) {
+    if (!isPlainObject(anObject)) // Not a plain Javascript object, empty array.
+        return [];
     // This is where sub-objects are to be stacked, during traversal through the object.
-    const stack = [{ value: anObject}];    
+    const stack = [{ value: anObject }];
     let idx = 0;
-
     while (idx < stack.length) {
         const element = stack[idx];
-        if (Object.prototype.toString.call(element.value) === "[object Object]") {
+        if (isPlainObject(element.value)) {
             for (const key in element.value) {
-                let path = element.path? element.path + "." + key : key;
-                stack.push(
-                    { value: element.value[key], path }
-                );
+                let path = element.path ? element.path + "." + key : key;
+                stack.push({ value: element.value[key], path });
             }
             element.remove = true; /* This has an incomplete path, and will be removed later */
         }
         idx++;
     }
     return stack
-            .filter(element => !(element.remove))
-            .map(element => element.path);
+        .filter(element => !(element.remove))
+        .map(element => element.path);
 } // function getPaths()
-module.exports.getPaths = getPaths;
-
-
+export { getPaths };
 /** Return an object with sorted fields,  ordered by field name ascending.
- * 
+ *
  * The returned object is independent of the source object.
- * 
+ *
  * NB. For comparison of objects, please see objCompare() function.
- * @param {object} pObject 
- * @returns {object} an object with fields sorted in ascending order of field names.
+ * @template T
+ * @param {T} pObject plain Typescript/Javascript object.
+ * @returns {T} an object with fields sorted in ascending order of field names.
 */
 function getSortedObject(pObject) {
+    if (!isPlainObject(pObject)) // Not a plain Javascript object, return as is.
+        return pObject;
     let cloneObj = deepClone(pObject);
-    let idx = 0;
     const paths = getPaths(cloneObj).toSorted();
-    sortedObj = {};
-
-    for (idx in paths) {
+    let sortedObj = {};
+    let idx;
+    for (idx = 0; idx < paths.length; idx++) {
         const path = paths[idx];
         const value = get(cloneObj, path);
         set(sortedObj, path, value);
     }
-    return sortedObj;    
+    return sortedObj;
 } // function getSortedObject(pObject) {
-module.exports.getSortedObject = getSortedObject;
-
+export { getSortedObject };
 /** Get the value of a field specified by the path from an object.
- * @param {object} anObject a Javascript object.
+ * @template T
+ * @param {T} anObject a Typescript/Javascript object.
  * @param {string} path a path specifying the field whose value is to be obtained.
- * @param {*} [defaultVal=undefined] a default value to return if the path does not exist on the object.
- * @returns {*} the value of the field specified by the path, otherwise a default value if supplied.
+ * @param {any} [defaultVal=undefined] a default value to return if the path does not exist on the object.
+ * @returns {U|undefined} the value of the field specified by the path, otherwise a default value if supplied.
  */
 function get(anObject, path, defaultVal = undefined) {
+    if (!isPlainObject(anObject)) // Not a plain Javascript object, return undefined.
+        return undefined;
     let paths = path.split('.');
     let tempObj = anObject;
-    for (let idx in paths) {
+    for (let idx = 0; idx < paths.length; idx++) {
         let key = paths[idx];
-        if (tempObj[key] === undefined) // key not found.
+        if (!(key in tempObj)) // key not found.
             return defaultVal;
-
         tempObj = tempObj[key];
         if (tempObj === undefined)
-            return defaultVal;        
+            return defaultVal;
     }
+    if (paths.length === 0) // Empty path, return default value.
+        return defaultVal;
     return tempObj;
 }
-module.exports.get = get;
-
+export { get };
 /** Set the value of a field specified by the path on an object.
- * @param {object} anObject a Javascript object.
+ * @template T, U
+ * @param {object} anObject a Typescript/Javascript object.
  * @param {string} path a path specifying the field whose value is to be set.
- * @param {*} value the value to set.
+ * @param {U} value the value to set.
  */
 function set(anObject, path, value) {
+    if (!isPlainObject(anObject)) // Not a plain Typescript/Javascript object. Do nothing.
+        return;
     let tempObj = anObject;
     let paths = path.split('.');
-    for (let idx in paths) {
+    for (let idx = 0; idx < paths.length; idx++) {
         let key = paths[idx];
         if (idx < paths.length - 1) {
+            if (!isPlainObject(tempObj)) // Not a plain Typescript/Javascript object, do nothing.
+                return;
             if (!(key in tempObj))
-                tempObj[key] = {};        
-            
+                tempObj[key] = {};
             tempObj = tempObj[key];
         }
         else
             tempObj[key] = value;
     }
 }
-module.exports.set = set;
-
+export { set };
 /** Unset the value of a field specified by the path on an object.
- * @param {object} anObject a Javascript object.
+ * @template T
+ * @param {T} anObject a Typescript/Javascript object.
  * @param {string} path a path specifying the field whose value is to be set.
- * @param {*} value the value to set.
  */
 function unset(anObject, path) {
+    if (!isPlainObject(anObject)) // Not a plain Typescript/Javascript object, do nothing.
+        return;
     let paths = path.split('.');
     let tempObj = anObject;
-    for (let idx in paths) {
+    for (let idx = 0; idx < paths.length; idx++) {
         let key = paths[idx];
-        if (Object.prototype.toString.call(tempObj) !== '[object Object]')
+        if (!isPlainObject(tempObj))
             return;
-        if (tempObj[key] === undefined)
+        if (!(key in tempObj))
             return;
         if (idx < paths.length - 1)
             tempObj = tempObj[key];
@@ -344,101 +332,90 @@ function unset(anObject, path) {
             delete tempObj[key];
     }
 }
-module.exports.unset = unset;
-
+export { unset };
 /**
  * Determine whether an object contains only 1, some or all of the specified fields, and not any other fields.
- * @param {object} anObject a Javascript object.
- * @param  {...string} fields one or more field names.
+ * @template T
+ * @param {T} anObject a Javascript object.
+ * @param  {...string[]} fields one or more field names.
  * @returns boolean true or false.
  */
 function hasOnly(anObject, ...fields) {
-    if (!fields || !fields.length)
+    if (!isPlainObject(anObject)) // Not a plain Javascript object, return false.
+        return false;
+    if (!fields || !(fields.length))
         throw new Error('fields must be specified');
-
     const paths = getPaths(anObject);
     let count = 0;
     for (const index in paths) {
         const path = paths[index];
-
         if (!fields.includes(path))
             return false;
         else
             count++;
     } // for (const index in paths)
-
     return (count > 0);
 }
-module.exports.hasOnly = hasOnly;
-
+export { hasOnly };
 /**
  * Determine whether an object contains all of the specified fields in addition to other fields.
- * @param {object} anObject a Javascript object.
- * @param  {...string} fields one or field names.
+ * @template T
+ * @param {T} anObject a Javascript object.
+ * @param  {...string[]} fields one or field names.
  * @returns boolean true or false.
  */
 function hasAll(anObject, ...fields) {
     if (!fields || !fields.length)
         throw new Error('fields must be specified');
-    
     const paths = getPaths(anObject);
     let count = 0;
     for (const index in fields) {
         const field = fields[index];
-
         if (!paths.includes(field))
             return false;
         else
             count++;
     } // for (const index in paths)
-
     return (count === fields.length);
 }
-module.exports.hasAll = hasAll;
-
+export { hasAll };
 /**
  * Determine whether an object contains only all of the specified fields. Nothing more, nothing less.
- * @param {object} anObject a Javascript object.
- * @param  {...string} fields one or field names.
+ * @param {T} anObject a Javascript object.
+ * @param  {...string[]} fields one or field names.
  * @returns boolean true or false.
  */
 function hasOnlyAll(anObject, ...fields) {
     return hasOnly(anObject, ...fields) && hasAll(anObject, ...fields);
 }
-module.exports.hasOnlyAll = hasOnlyAll;
-
+export { hasOnlyAll };
 /**Binary Search the sorted primitive data array for a value and return the index.
- * 
+ *
  * ArraySortDir specifies the direction in which the array is sorted (desc or asc).
- * 
+ *
  * If the array contains the value searched for, then the index returned is the location of this value on the array,
  * otherwise, the index is of closest value in the array that is before or after the search value in terms of sort order.
- * 
+ *
  * This function can be used also in cases where values are to be inserted into the array while maintaining sort order.
- * @param {Array} anArray an array of primitve type. All element must be the same type.
- * @param {*} searchVal search value
+ * @template T
+ * @param {Array<T>} anArray an array of primitve type. All element must be the same type.
+ * @param {T} searchVal search value
  * @param {number} [startFrom=0] index from which to start. Default: 0.
- * @param {string} [arraySortDir='asc'] sort direction. Must be 'asc' or 'desc'. Default: 'asc'
+ * @param {'asc' | 'desc'} [arraySortDir='asc'] sort direction. Must be 'asc' or 'desc'. Default: 'asc'
  * @returns {number} an index. -1 mean value not found.
  */
 function binarySearch(anArray, searchVal, startFrom = 0, arraySortDir = 'asc') {
-
-    const sortDirections = ['asc', 'desc']
+    const sortDirections = ['asc', 'desc'];
     if (!['asc', 'desc'].includes(arraySortDir))
         throw new Error(`arraySortDir must be one of ${sortDirections}`);
-
     if (anArray.length === 0)
         return -1; // Empty array.
-
-    let start = startFrom,
-        end = anArray.length - 1;
-
-    while(start < end) {
+    let start = startFrom, end = anArray.length - 1;
+    while (start < end) {
         if (compare(anArray[start], searchVal) === 0)
             return start;
         else if (compare(anArray[end], searchVal) === 0)
             return end;
-
         const mid = Math.trunc((start + end) / 2);
         const comparison = compare(anArray[mid], searchVal, arraySortDir);
         if (comparison < 0)
@@ -448,28 +425,27 @@ function binarySearch(anArray, searchVal, startFrom = 0, arraySortDir = 'asc') {
         else
             return mid;
     } // while(start < end) {
-
     return start;
 } // function binarySearch(anArray, arraySortDir, searchVal) {
-module.exports.binarySearch = binarySearch;
-
+export { binarySearch };
 /** Compare two values of the same primitive type, according to the sort direction.
- * 
+ * May be used with dates, numbers, booleans and strings. For other types, the result is unpredictable.
+ *
  * A return value of -1 means that value1 is before value2 in terms of sort order.
- * 
+ *
  * A return value of 1 means that value1 is after value2 in terms of sort order.
- * 
+ *
  * A return value of 0 means that value1 is equal to value2.
- * @param {*} value1
- * @param {*} value2
- * @param {string} [sortDir='asc'] 
+ * @template T
+ * @param {T} value1
+ * @param {T} value2
+ * @param {'asc' | 'desc'} [sortDir='asc'] sort direction. Must be 'asc' or 'desc'. Default: 'asc'
  * @returns {number}  -1, 0 or 1
 */
 function compare(value1, value2, sortDir = 'asc') {
     if (!['asc', 'desc'].includes(sortDir))
         throw new Error(`sortDir must be one of ${sortDir}`);
-
-    const returnValue = (sortDir === 'desc'? -1 : 1);
+    const returnValue = (sortDir === 'desc' ? -1 : 1);
     if (value1 > value2)
         return returnValue;
     else if (value1 < value2)
@@ -477,40 +453,39 @@ function compare(value1, value2, sortDir = 'asc') {
     else // Avoid if (value1 === value2) because this may yield false for reference types (ie. Dates), because of different memory addresses.
         return 0;
 } // function compare(value1, value2, sortDir) {
-module.exports.compare = compare;
-
-/**Binary Search the sorted (ascending or descending order) array of objects for a value and return the index.
- * 
+export { compare };
+/**Binary Search the sorted (ascending or descending order) array of plain Typescript/Javascript objects for a value and return the index.
+ *
  * The assumption is that the array is sorted in order of 1 or more sort fields,
- * 
+ *
  * Examples of sort fields: 'lastName asc', 'firstName', 'address.province asc', 'address.townOrCity asc'.
- * 
+ *
  * If the array contains the object with values searched for, then the index returned is the location of this value in the array, otherwise,
  * the index is of the closest value in the array that is before or after the searchObj value.
  * Return -1 for an empty array.
- * Assumed field data types are Number, String and Date.
+ * Assumed field data types are numbers, strings, booleans and dates.
  * This function is to be used also in cases where objects are to be inserted into the array while maintaining sort order.
- * @param {Array<object} objArray an array of Javascript objects.
- * @param {object} searchObj an object to search for.
+ * @template T
+ * @param {Array<T>} objArray an array of Javascript objects.
+ * @param {T} searchObj an object to search for.
  * @param {number} [startFrom=0] index from which to start searching.
- * @param {...string} sortFields one or more search fields.
+ * @param {...string[]} sortFields one or more search fields.
  * @returns {number} an index.
  */
 function binarySearchObj(objArray, searchObj, startFrom = 0, ...sortFields) {
+    if (!sortFields || !sortFields.length)
+        throw new Error('At least one sort field is required.');
     if (objArray.length === 0)
         return -1;
-
-    let start = startFrom,
-        end = objArray.length - 1;
-
-    while(start < end) {
+    if (objArray.some(element => !isPlainObject(element)))
+        throw new Error('All elements in objArray must be plain objects.');
+    let start = startFrom, end = objArray.length - 1;
+    while (start < end) {
         if (objCompare(objArray[start], searchObj, ...sortFields) === 0)
             return start;
         else if (objCompare(objArray[end], searchObj, ...sortFields) === 0)
             return end;
-
         let mid = Math.trunc((start + end) / 2);
-
         if (objCompare(objArray[mid], searchObj, ...sortFields) < 0)
             start = mid + 1;
         else if (objCompare(objArray[mid], searchObj, ...sortFields) > 0)
@@ -518,24 +493,26 @@ function binarySearchObj(objArray, searchObj, startFrom = 0, ...sortFields) {
         else
             return mid;
     } // while(start < end) {
-    
     return start;
 } // function binarySearchObj(objArray, searchObj, ...comparisonFields) {
-module.exports.binarySearchObj = binarySearchObj;
-
-/**Get the index of the first element in an object array that is different from the target element 
+export { binarySearchObj };
+/**Get the index of the first element in an object array that is different from the target element
  * according to the comparison fields.
- * @param {Array<object>} objArray an array of objects
- * @param {object} targetObj target object
+ * @template T
+ * @param {Array<T>} objArray an array of objects
+ * @param {T} targetObj target object
  * @param {number} startFrom index from which to start searching
- * @param {...string} comparisonFields the fields sort order of the array. e.g. 'score desc', 'numGames asc'.
+ * @param {...string[]} comparisonFields the fields sort order of the array. e.g. 'score desc', 'numGames asc'.
  * @returns index of the next different object.
  */
 function getNextDifferent(objArray, targetObj, startFrom, ...comparisonFields) {
-    let start = startFrom,
-          end = objArray.length - 1;
-
-    
+    if (!comparisonFields || !comparisonFields.length)
+        throw new Error('At least one comparison field is required.');
+    if (objArray.length === 0)
+        return -1;
+    if (objArray.some(element => !isPlainObject(element)))
+        throw new Error('All elements in objArray must be plain objects.');
+    let start = startFrom, end = objArray.length - 1;
     if (start >= objArray.length) { // throw error if startFrom is outside the bounds of the array.
         throw new Error('startFrom is outside the bounds of the array.');
     }
@@ -543,8 +520,7 @@ function getNextDifferent(objArray, targetObj, startFrom, ...comparisonFields) {
     if (objCompare(targetObj, objArray[start], ...comparisonFields) > 0) {
         throw new Error('targetObj is to the right (\'greater than\') objArray[startFrom].');
     }
-         
-    while (start < end) {   
+    while (start < end) {
         let mid = Math.trunc((start + end) / 2);
         if (objCompare(targetObj, objArray[mid], ...comparisonFields) === 0) {
             start = mid + 1;
@@ -557,50 +533,47 @@ function getNextDifferent(objArray, targetObj, startFrom, ...comparisonFields) {
         return -1;
     return start;
 }
-module.exports.getNextDifferent = getNextDifferent;
-
+export { getNextDifferent };
 /**Create an array with duplicates eliminated, according to certain fields. Taking only the first or last object from each duplicate set.
- * 
+ *
  * If firstOfDuplicates === true, then the first element in each set of duplicates is taken.
- * 
+ *
  * if firstOfDuplicates === false, then the last element is taken from each set of duplicates.
- * 
+ *
  * Assumed comparison field data types are Boolean, Number, String, Date.
- * 
+ *
  * The array must be sorted according to the comparison fields before calling this function.
  * The value of the comparison field must include both the field name and sort direction.
  * Sort direction assumed to be "asc" if not provided.
  * Examples of comparison fields: "firstName", "lastName desc", "address.province asc", "address.townOrCity".
- * @param {Array<object>} objArray an input array of objects
+ * @template T
+ * @param {Array<T>} objArray an input array of objects
  * @param {boolean} firstOfDuplicates specify whether to take the first or last object in each a duplicate set.
- * @param {...string} comparisonFields comparison fieds plus sort order.
- * @returns {Array<object>} an array with no duplicates.
+ * @param {...string[]} comparisonFields comparison fieds plus sort order.
+ * @returns {Array<T>} an array with no duplicates.
  */
 function getObjArrayWithNoDuplicates(objArray, firstOfDuplicates, ...comparisonFields) {
-
     if (objArray.length <= 1)
         return [...objArray];
-
     if (typeof firstOfDuplicates !== 'boolean')
         throw new Error(`firstOfDuplicates must be boolean true or false.`);
-
+    if (!comparisonFields || !comparisonFields.length)
+        throw new Error('At least one comparison field is required.');
+    if (objArray.some(element => !isPlainObject(element)))
+        throw new Error('All elements in objArray must be plain objects.');
     const noDuplicates = [];
-    let idx = 0;
     let grpStart = 0; // Start index of current duplicate group.
     while (grpStart < objArray.length - 1) {
         if (firstOfDuplicates) {
             noDuplicates.push(objArray[grpStart]);
         }
-
         grpStart = getNextDifferent(objArray, objArray[grpStart], grpStart + 1, ...comparisonFields);
         if (grpStart < 0)
             break; // No more different objects.
-
         let grpEnd = grpStart - 1;
         if (!firstOfDuplicates) {
             noDuplicates.push(objArray[grpEnd]);
         }
-        idx = grpStart;
     }
     if (noDuplicates.length === 0) { // All objects are duplicates.
         if (firstOfDuplicates)
@@ -613,46 +586,45 @@ function getObjArrayWithNoDuplicates(objArray, firstOfDuplicates, ...comparisonF
             noDuplicates.push(objArray[objArray.length - 1]);
         }
     }
-
     return noDuplicates;
 } // function getObjArrayWithNoDuplicates(objArray, ...comparisonFields) {
-module.exports.getObjArrayWithNoDuplicates = getObjArrayWithNoDuplicates;
-
+export { getObjArrayWithNoDuplicates };
 /**Compare 2 objects according to the comparison fields, and return the result of:
- * 
+ *
  * -1 if obj1 is before obj2, 1 if obj1 is after obj2, 0 if obj1 is equal to obj2.
- * 
+ *
  * Each each of the comparisonFields must be of the form 'fieldName sortDirection' or 'fieldName'.
- *  
+ *
  * Sort directions: 'asc', 'desc'.
- * 
+ *
  * Field/sort-direction examples: 'lastName desc', 'firstName', 'firstName asc', 'address.provinceName asc'.
- * 
+ *
  * If sort direction is not provided, then it is assumed to be ascending.
- * @param {object} obj1 first object to compare
- * @param {object} obj2 second object to compare
- * @param  {...string} comparisonFields one or more comparison fields plus sort order.
+ * @template T
+ * @param {T} obj1 first object to compare
+ * @param {T} obj2 second object to compare
+ * @param  {...string[]} comparisonFields one or more comparison fields plus sort order.
  * @returns {number} comparison result: -1, 0 or 1.
 */
 function objCompare(obj1, obj2, ...comparisonFields) {
-    if (comparisonFields.length === 0)
+    if (!comparisonFields || !comparisonFields.length)
         throw new Error('comparisonFields not supplied!');
-
+    if (!isPlainObject(obj1) || !isPlainObject(obj2))
+        throw new Error('Both obj1 and obj2 must be plain objects.');
     const sortDirections = ['', 'asc', 'desc'];
-    for (const index in comparisonFields) {
+    for (let index = 0; index < comparisonFields.length; index++) {
         const field = comparisonFields[index].split(' ');
         const fieldName = field[0];
         let sortDir = '';
+        if (field.length > 2)
+            throw new Error('Each comparison field must be of the form \'fieldName sortDirection\' or \'fieldName\'.');
         if (field.length === 2)
             sortDir = field[1];
-
         if (!sortDirections.includes(sortDir))
             throw new Error('Sort direction must be one of ' + sortDirections.toString());
-
         const value1 = get(obj1, fieldName);
         const value2 = get(obj2, fieldName);
-
-        const returnValue = (sortDir === 'desc'? -1: 1);
+        const returnValue = (sortDir === 'desc' ? -1 : 1);
         if (value1 > value2)
             return returnValue;
         else if (value1 < value2)
@@ -660,4 +632,4 @@ function objCompare(obj1, obj2, ...comparisonFields) {
     } // for (const field in comparisonFields) {
     return 0;
 } // function comparison(obj1, obj2, ...comparisonFields) {
-module.exports.objCompare = objCompare;
+export { objCompare };
