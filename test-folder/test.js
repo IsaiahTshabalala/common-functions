@@ -42,7 +42,7 @@ let anObject2 = {
         }
     }
 };
-console.log(commonFunctions.objCompare(anObject, anObject2, "lastName", "firstName")); // -1 because "Tshabalala Isaiah" is before "Tshabalala Lindiwe" according to ascending order.
+console.log(commonFunctions.objCompare(anObject, anObject2, '')); // -1 because "Tshabalala Isaiah" is before "Tshabalala Lindiwe" according to ascending order.
 console.log(commonFunctions.objCompare(anObject, anObject2, "address.country.name", "address.city", "address.mainPlace")); // 1 because "Johannesburg" is after "Vereeniging" according to descending order.
 console.log("----END OF objCompare test----");
 let deepClonedObject = deepClone(anObject);

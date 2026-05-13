@@ -22,7 +22,10 @@
  * 2026/01/10 2026/10/10      ITA   1.11      Added more robustness in dealing with non-existent fields in get() and unset() functions.
  * 2026/05/07 2026/05/08      ITA   1.12      Migrated to Typescript.
  *                                            Added a robust functionality for verifying whether a variable is a plain Typescript/Javacript object.
-
+ * 2026/05/13 2026/05/13      ITA   1.13      Removed the <U> generic from get and set functions in favor of the unknown type. This relaxes the strict requirement for callers to provide explicit type parameters
+ *                                            for return values and default values. By using unknown, the functions become more versatile and easier to use in broad scenarios,
+ *                                            shifting the responsibility of type verification to the call site where the context is better known.
+ *                                            objCompare function to enforce that the comparison fields of the concerned objects be primitive or date type, and be of the same type.
 */
 /**Return true if userName is valid
  * @param {string} userName
@@ -264,8 +267,8 @@ export { getSortedObject };
  * @template T
  * @param {T} anObject a Typescript/Javascript object.
  * @param {string} path a path specifying the field whose value is to be obtained.
- * @param {any} [defaultVal=undefined] a default value to return if the path does not exist on the object.
- * @returns {U|undefined} the value of the field specified by the path, otherwise a default value if supplied.
+ * @param {unknown} [defaultVal=undefined] a default value to return if the path does not exist on the object.
+ * @returns {unknown} the value of the field specified by the path, otherwise a default value if supplied.
  */
 function get(anObject, path, defaultVal = undefined) {
     if (!isPlainObject(anObject)) // Not a plain Javascript object, return undefined.
@@ -286,10 +289,9 @@ function get(anObject, path, defaultVal = undefined) {
 }
 export { get };
 /** Set the value of a field specified by the path on an object.
- * @template T, U
+ * @template T
  * @param {object} anObject a Typescript/Javascript object.
  * @param {string} path a path specifying the field whose value is to be set.
- * @param {U} value the value to set.
  */
 function set(anObject, path, value) {
     if (!isPlainObject(anObject)) // Not a plain Typescript/Javascript object. Do nothing.
@@ -624,6 +626,14 @@ function objCompare(obj1, obj2, ...comparisonFields) {
             throw new Error('Sort direction must be one of ' + sortDirections.toString());
         const value1 = get(obj1, fieldName);
         const value2 = get(obj2, fieldName);
+        const primitiveTypes = ['string', 'number', 'bigint', 'boolean'];
+        if (!(primitiveTypes.includes(typeof value1) || primitiveTypes.includes(typeof value2)
+            || (value1 instanceof Date) || (value2 instanceof Date))) {
+            throw new Error("Comparison values must be primitive type or Date instance");
+        }
+        if (typeof (value1) !== typeof (value2)) {
+            throw new Error("Comparison values must be of the same type");
+        }
         const returnValue = (sortDir === 'desc' ? -1 : 1);
         if (value1 > value2)
             return returnValue;
