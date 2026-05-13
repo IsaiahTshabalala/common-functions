@@ -79,3 +79,7 @@ Added more robustness in dealing with non-existent fields in the get() and unset
 ## Version 2.0.0 - 2026/05/07 to 2026/05/08 - ITA
 - Migrated to Typescript.
 - Added more robustness in verifying whether variables are plain Typescript/Javascript objects or not.
+
+## Version 2.0.1 - 2026/05/13 to 2026/05/13 - ITA
+- get and set functions: relaxed one of the generic types (U) to unknown, enabling usage in broader scenarios. Type verification is left the call site where context is known.
+- objCompare function: added validation to enforce that comparison fields of concerned objects be primitive or date, and be of the same type.
