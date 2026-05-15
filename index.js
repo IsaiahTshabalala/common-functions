@@ -26,6 +26,7 @@
  *                                            for return values and default values. By using unknown, the functions become more versatile and easier to use in broad scenarios,
  *                                            shifting the responsibility of type verification to the call site where the context is better known.
  *                                            objCompare function to enforce that the comparison fields of the concerned objects be primitive or date type, and be of the same type.
+ * 2026/05/15 2026/05/15      ITA   1.14      Prefixed the error messages with the library name, to make it easy for devs to know which package caused a crash.
 */
 /**Return true if userName is valid
  * @param {string} userName
@@ -346,7 +347,7 @@ function hasOnly(anObject, ...fields) {
     if (!isPlainObject(anObject)) // Not a plain Javascript object, return false.
         return false;
     if (!fields || !(fields.length))
-        throw new Error('fields must be specified');
+        throw new Error('[some-common-functions-js] fields must be specified');
     const paths = getPaths(anObject);
     let count = 0;
     for (const index in paths) {
@@ -368,7 +369,7 @@ export { hasOnly };
  */
 function hasAll(anObject, ...fields) {
     if (!fields || !fields.length)
-        throw new Error('fields must be specified');
+        throw new Error('[some-common-functions-js] fields must be specified');
     const paths = getPaths(anObject);
     let count = 0;
     for (const index in fields) {
@@ -476,11 +477,11 @@ export { compare };
  */
 function binarySearchObj(objArray, searchObj, startFrom = 0, ...sortFields) {
     if (!sortFields || !sortFields.length)
-        throw new Error('At least one sort field is required.');
+        throw new Error('[some-common-functions-js] At least one sort field is required.');
     if (objArray.length === 0)
         return -1;
     if (objArray.some(element => !isPlainObject(element)))
-        throw new Error('All elements in objArray must be plain objects.');
+        throw new Error('[some-common-functions-js] All elements in objArray must be plain objects.');
     let start = startFrom, end = objArray.length - 1;
     while (start < end) {
         if (objCompare(objArray[start], searchObj, ...sortFields) === 0)
@@ -509,18 +510,18 @@ export { binarySearchObj };
  */
 function getNextDifferent(objArray, targetObj, startFrom, ...comparisonFields) {
     if (!comparisonFields || !comparisonFields.length)
-        throw new Error('At least one comparison field is required.');
+        throw new Error('[some-common-functions-js] At least one comparison field is required.');
     if (objArray.length === 0)
         return -1;
     if (objArray.some(element => !isPlainObject(element)))
-        throw new Error('All elements in objArray must be plain objects.');
+        throw new Error('[some-common-functions-js] All elements in objArray must be plain objects.');
     let start = startFrom, end = objArray.length - 1;
     if (start >= objArray.length) { // throw error if startFrom is outside the bounds of the array.
-        throw new Error('startFrom is outside the bounds of the array.');
+        throw new Error('[some-common-functions-js] startFrom is outside the bounds of the array.');
     }
     // If target object is to the right of objArray[start], then throw an error..
     if (objCompare(targetObj, objArray[start], ...comparisonFields) > 0) {
-        throw new Error('targetObj is to the right (\'greater than\') objArray[startFrom].');
+        throw new Error('[some-common-functions-js] targetObj is to the right (\'greater than\') objArray[startFrom].');
     }
     while (start < end) {
         let mid = Math.trunc((start + end) / 2);
@@ -560,9 +561,9 @@ function getObjArrayWithNoDuplicates(objArray, firstOfDuplicates, ...comparisonF
     if (typeof firstOfDuplicates !== 'boolean')
         throw new Error(`firstOfDuplicates must be boolean true or false.`);
     if (!comparisonFields || !comparisonFields.length)
-        throw new Error('At least one comparison field is required.');
+        throw new Error('[some-common-functions-js] At least one comparison field is required.');
     if (objArray.some(element => !isPlainObject(element)))
-        throw new Error('All elements in objArray must be plain objects.');
+        throw new Error('[some-common-functions-js] All elements in objArray must be plain objects.');
     const noDuplicates = [];
     let grpStart = 0; // Start index of current duplicate group.
     while (grpStart < objArray.length - 1) {
@@ -610,20 +611,20 @@ export { getObjArrayWithNoDuplicates };
 */
 function objCompare(obj1, obj2, ...comparisonFields) {
     if (!comparisonFields || !comparisonFields.length)
-        throw new Error('comparisonFields not supplied!');
+        throw new Error('[some-common-functions-js] comparisonFields not supplied!');
     if (!isPlainObject(obj1) || !isPlainObject(obj2))
-        throw new Error('Both obj1 and obj2 must be plain objects.');
+        throw new Error('[some-common-functions-js] Both obj1 and obj2 must be plain objects.');
     const sortDirections = ['', 'asc', 'desc'];
     for (let index = 0; index < comparisonFields.length; index++) {
         const field = comparisonFields[index].split(' ');
         const fieldName = field[0];
         let sortDir = '';
         if (field.length > 2)
-            throw new Error('Each comparison field must be of the form \'fieldName sortDirection\' or \'fieldName\'.');
+            throw new Error('[some-common-functions-js] Each comparison field must be of the form \'fieldName sortDirection\' or \'fieldName\'.');
         if (field.length === 2)
             sortDir = field[1];
         if (!sortDirections.includes(sortDir))
-            throw new Error('Sort direction must be one of ' + sortDirections.toString());
+            throw new Error('[some-common-functions-js] Sort direction must be one of ' + sortDirections.toString());
         const value1 = get(obj1, fieldName);
         const value2 = get(obj2, fieldName);
         const primitiveTypes = ['string', 'number', 'bigint', 'boolean'];

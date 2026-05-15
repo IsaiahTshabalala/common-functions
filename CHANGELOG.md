@@ -83,3 +83,6 @@ Added more robustness in dealing with non-existent fields in the get() and unset
 ## Version 2.0.1 - 2026/05/13 to 2026/05/13 - ITA
 - get and set functions: relaxed one of the generic types (U) to unknown, enabling usage in broader scenarios. Type verification is left the call site where context is known.
 - objCompare function: added validation to enforce that comparison fields of concerned objects be primitive or date, and be of the same type.
+
+## Version 2.0.2 - 2026/05/15 to 2026/05/15 - ITA
+- Prefixed the error messages with the library name, to make it easy for devs to know which package caused a crash.
