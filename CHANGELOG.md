@@ -86,3 +86,6 @@ Added more robustness in dealing with non-existent fields in the get() and unset
 
 ## Version 2.0.2 - 2026/05/15 to 2026/05/15 - ITA
 - Prefixed the error messages with the library name, to make it easy for devs to know which package caused a crash.
+
+## Version 2.0.3 - 2026/05/15 to 2026/05/15 - ITA
+- Updated the package version in the package.json file accordingly - to enable publishing on npm.
